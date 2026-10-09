@@ -1,0 +1,109 @@
+/* Single source of design tokens (Constitution IV). Values from research R8. */
+:root {
+  /* Spacing: 8 px base grid, 4 px for fine adjustments */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+  --board-gap: 24px;
+  --grid: 8px;
+
+  /* Radii */
+  --radius-section: 24px;
+  --radius-row: 12px;
+  --radius-pill: 999px;
+  --radius-timer: 28px;
+  --radius-control: 10px;
+
+  /* Sizes */
+  --hairline-width: 1px;
+  --focus-width: 2px;
+  --control-size: 36px;
+  --icon-size: 18px;
+  --checkbox-size: 18px;
+  --toolbar-height: 56px;
+  --estimate-width: 72px;
+  --handle-size: 12px;
+
+  /* Typography */
+  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+  --text-2xl: 28px;
+  --font-timer: 56px;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --line-tight: 1.15;
+  --line-normal: 1.4;
+
+  /* Accent palette (fills and strokes) */
+  --accent-orange: #ff7a1a;
+  --accent-mint: #2ee6a6;
+  --accent-pink: #ff4f9a;
+  --accent-yellow: #ffd60a;
+  --accent-violet: #a970ff;
+  --accent-sky: #4cc9f0;
+  --on-accent: #111114;
+
+  /* Motion */
+  --motion-fast: 150ms;
+  --motion-theme: 220ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Layering */
+  --z-board: 0;
+  --z-toolbar: 10;
+  --z-timer: 20;
+  --z-dialog: 30;
+  --z-notice: 40;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-theme: 0ms;
+  }
+}
+
+/* Per-section accent, set via data-accent on the section card */
+[data-accent='orange'] {
+  --accent: var(--accent-orange);
+  --accent-text: var(--accent-orange-text);
+}
+
+[data-accent='mint'] {
+  --accent: var(--accent-mint);
+  --accent-text: var(--accent-mint-text);
+}
+
+[data-accent='pink'] {
+  --accent: var(--accent-pink);
+  --accent-text: var(--accent-pink-text);
+}
+
+[data-accent='yellow'] {
+  --accent: var(--accent-yellow);
+  --accent-text: var(--accent-yellow-text);
+}
+
+[data-accent='violet'] {
+  --accent: var(--accent-violet);
+  --accent-text: var(--accent-violet-text);
+}
+
+[data-accent='sky'] {
+  --accent: var(--accent-sky);
+  --accent-text: var(--accent-sky-text);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

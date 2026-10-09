@@ -18,3 +18,12 @@ desktop.ini
 
 # Logs
 *.log
+
+# Node / build output
+node_modules/
+dist/
+dist-ssr/
+*.local
+coverage/
+playwright-report/
+test-results/

@@ -243,4 +243,4 @@ pnpm, ESLint (typescript-eslint strict), Prettier, Stylelint, `rustfmt`, `clippy
 | `tauri-plugin-window-state` | Window size/position | MIT / Apache-2.0 | hand-rolled in `storage.rs` |
 | `tokio` (already a Tauri dependency) | Timer sleep/cancel | MIT | `std::thread` + sleep (cancellation is messier) |
 | `serde`, `serde_json` | IPC (de)serialization | MIT / Apache-2.0 | none |
-| Inter (font file) | Typography | SIL OFL 1.1 | system font stack |
+| `@fontsource-variable/inter` (Inter, bundled locally) | Typography | SIL OFL 1.1 | system font stack |
