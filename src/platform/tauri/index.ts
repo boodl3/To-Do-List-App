@@ -1,16 +1,16 @@
-import { fakeClock, fakeTimer, fakeWindow } from '../fake';
+import { fakeWindow } from '../fake';
 import type { Platform } from '../ports';
 import { matchMediaTheme } from '../systemTheme';
 import { tauriDocumentStore } from './store';
+import { tauriTimer } from './timer';
 
 export function createTauriPlatform(): Platform {
-  const clock = { now: () => Date.now() };
   return {
     store: tauriDocumentStore,
-    // Replaced by native adapters in US3 (timer) and US5 (window).
+    // Replaced by the native adapter in US5.
     window: fakeWindow().controls,
-    timer: fakeTimer(fakeClock()).timer,
-    clock,
+    timer: tauriTimer,
+    clock: { now: () => Date.now() },
     systemTheme: matchMediaTheme(),
   };
 }

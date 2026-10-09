@@ -2,6 +2,7 @@ import { emptyDocument } from '../domain/defaults';
 import { loadDocument } from '../domain/migrations';
 import type { AppDocument } from '../domain/schema';
 import type { DocumentStore, Platform } from '../platform/ports';
+import { createActions } from './actions';
 import { startAutosave } from './autosave';
 import type { AppStore } from './store';
 
@@ -34,6 +35,18 @@ export async function loadInitialDocument(
   }
 }
 
+/** Timer engine: native completions, plus catch-up after launch, sleep or clock changes. */
+function startTimer(platform: Platform, store: AppStore) {
+  const actions = createActions(store, platform);
+  void platform.timer.onCompleted(({ sessionId }) => {
+    actions.timerCompleted(sessionId);
+  });
+  actions.reconcileTimer();
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') actions.reconcileTimer();
+  });
+}
+
 function autosave(platform: Platform, store: AppStore) {
   const { flush } = startAutosave(
     { getDoc: () => store.getState().doc, subscribe: store.subscribe },
@@ -57,10 +70,12 @@ export async function boot(platform: Platform, store: AppStore): Promise<void> {
     return;
   }
   autosave(platform, store);
+  startTimer(platform, store);
 }
 
 /** Used by the load-error dialog after an unrecoverable I/O failure. */
 export function startFresh(platform: Platform, store: AppStore): void {
   store.getState().hydrate(emptyDocument(platform.clock.now()));
   autosave(platform, store);
+  startTimer(platform, store);
 }

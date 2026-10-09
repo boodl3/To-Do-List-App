@@ -10,7 +10,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: auto auto 1fr auto auto;
+  grid-template-columns: auto auto 1fr auto auto auto;
   gap: var(--space-1);
   align-items: start;
   padding: var(--space-1) 0;

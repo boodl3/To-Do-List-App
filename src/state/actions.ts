@@ -6,7 +6,10 @@ import { tidy } from '../domain/layout/tidy';
 import * as S from '../domain/sections';
 import { createSection, renameSection, updateSection } from '../domain/sections';
 import type { Accent, Section, Viewport } from '../domain/schema';
+import * as P from '../domain/pomodoro';
+import type { PomodoroSettings } from '../domain/schema';
 import * as T from '../domain/tasks';
+import type { Platform } from '../platform/ports';
 import type { AppStore } from './store';
 
 /** Focus id for a section's "Add a task" row. */
@@ -15,8 +18,38 @@ export const addRowFocusId = (sectionId: string) => `add:${sectionId}`;
 export const titleFocusId = (sectionId: string) => `title:${sectionId}`;
 
 /** User intents → pure domain functions → one store update (and undo step) each. */
-export function createActions(store: AppStore, now: () => number) {
+export function createActions(store: AppStore, platform: Pick<Platform, 'clock' | 'timer'>) {
   const state = () => store.getState();
+  const now = () => platform.clock.now();
+  const pomodoro = () => state().doc.pomodoro;
+
+  /** Let Rust fire the completion alert even while the webview is throttled (research R6). */
+  const scheduleCompletion = () => {
+    const p = pomodoro();
+    if (p.status.kind !== 'running' || !p.sessionId) return;
+    platform.timer
+      .schedule({ sessionId: p.sessionId, endsAtMs: p.status.endsAt, ...P.completionMessage(p) })
+      .catch((e: unknown) => {
+        state().setNotice(`Couldn't schedule the timer alert: ${String(e)}`);
+      });
+  };
+  const cancelCompletion = () => {
+    const id = pomodoro().sessionId;
+    if (id) void platform.timer.cancel(id);
+  };
+  const announce = (message: { title: string; body: string }) => {
+    state().setNotice(`${message.title} ${message.body}`);
+    state().signalCompletion();
+  };
+  /** A deleted task can't stay linked to the timer (data-model PomodoroState.linkedTaskId). */
+  const unlinkIfGone = () => {
+    const id = pomodoro().linkedTaskId;
+    if (!id) return;
+    const exists = state().doc.board.sections.some((s) =>
+      s.tasks.some((t) => t.id === id || t.subtasks.some((x) => x.id === id)),
+    );
+    if (!exists) state().updatePomodoro((p) => ({ ...p, linkedTaskId: null }));
+  };
   const inSection = (sectionId: string, fn: (s: Section) => Section) => {
     state().updateBoard((b) => updateSection(b, sectionId, fn));
   };
@@ -49,6 +82,7 @@ export function createActions(store: AppStore, now: () => number) {
     deleteSection(sectionId: string) {
       state().setConfirmDelete(null);
       state().updateBoard((b) => S.deleteSection(b, sectionId));
+      unlinkIfGone();
     },
 
     /** Drag/resize: one undo step from start to end (research R4 gesture coalescing). */
@@ -129,7 +163,59 @@ export function createActions(store: AppStore, now: () => number) {
       const ids = flatIds(sectionId);
       const previous = ids[ids.indexOf(itemId) - 1];
       inSection(sectionId, (s) => T.deleteItem(s, itemId));
+      unlinkIfGone();
       if (focusPrevious) state().requestFocus(previous ?? addRowFocusId(sectionId));
+    },
+
+    // Pomodoro (US3). Timer state is never part of undo history.
+    timerStart() {
+      state().updatePomodoro((p) => P.start(p, now(), newId()));
+      scheduleCompletion();
+    },
+    timerPause() {
+      cancelCompletion();
+      state().updatePomodoro((p) => P.pause(p, now()));
+    },
+    timerResume() {
+      state().updatePomodoro((p) => P.resume(p, now()));
+      scheduleCompletion();
+    },
+    timerReset() {
+      cancelCompletion();
+      state().updatePomodoro(P.reset);
+    },
+    timerSkip() {
+      cancelCompletion();
+      state().updatePomodoro(P.skip);
+    },
+    /** The scheduled completion fired; stale sessions are ignored. */
+    timerCompleted(sessionId: string) {
+      const p = pomodoro();
+      if (p.sessionId !== sessionId || p.status.kind !== 'running') return;
+      const message = P.completionMessage(p);
+      state().updatePomodoro((q) => P.complete(q, now()));
+      announce(message);
+    },
+    /** After launch, wake-up or a clock jump: finish overdue sessions, re-arm running ones. */
+    reconcileTimer() {
+      const before = pomodoro();
+      const message = P.completionMessage(before);
+      state().updatePomodoro((p) => P.reconcile(p, now()));
+      if (before.status.kind === 'running' && pomodoro().status.kind === 'idle') announce(message);
+      else scheduleCompletion();
+    },
+    setTimerSettings(settings: PomodoroSettings) {
+      state().updatePomodoro((p) => P.updateSettings(p, settings));
+    },
+    setWidget(patch: Partial<{ x: number; y: number; visible: boolean }>) {
+      state().updatePomodoro((p) => ({ ...p, widget: { ...p.widget, ...patch } }));
+    },
+    focusOn(taskId: string) {
+      state().updatePomodoro((p) => ({
+        ...p,
+        linkedTaskId: taskId,
+        widget: { ...p.widget, visible: true },
+      }));
     },
   };
   return api;

@@ -5,8 +5,8 @@ import { usePlatform } from './PlatformProvider';
 
 export function useActions(): Actions {
   const store = useAppStore();
-  const { clock } = usePlatform();
-  return useMemo(() => createActions(store, () => clock.now()), [store, clock]);
+  const platform = usePlatform();
+  return useMemo(() => createActions(store, platform), [store, platform]);
 }
 
 /** Focuses the element when the store's focus request names `id`, then clears the request. */

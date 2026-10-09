@@ -1,5 +1,5 @@
 import { ReactFlowProvider } from '@xyflow/react';
-import { LayoutGrid, Plus } from 'lucide-react';
+import { LayoutGrid, Plus, Timer } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { startFresh } from '../../state/boot';
 import { useApp, useAppStore } from '../../state/selectors';
@@ -7,6 +7,7 @@ import { BoardCanvas } from '../board/BoardCanvas';
 import { EmptyBoard } from '../board/EmptyBoard';
 import { useAddSection } from '../board/useAddSection';
 import { useVisibleRect } from '../board/useVisibleRect';
+import { PomodoroWidget } from '../pomodoro/PomodoroWidget';
 import { ConfirmDeleteDialog } from '../section/ConfirmDeleteDialog';
 import { IconButton, Toolbar } from '../toolbar/Toolbar';
 import { useResolvedTheme } from '../theme/useResolvedTheme';
@@ -46,6 +47,7 @@ function Workspace() {
   const actions = useActions();
   const visible = useVisibleRect();
   const empty = useApp((s) => s.doc.board.sections.length === 0);
+  const timerVisible = useApp((s) => s.doc.pomodoro.widget.visible);
   return (
     <>
       <Toolbar
@@ -65,11 +67,23 @@ function Workspace() {
             </IconButton>
           </>
         }
+        end={
+          <IconButton
+            label="Timer"
+            pressed={timerVisible}
+            onClick={() => {
+              actions.setWidget({ visible: !timerVisible });
+            }}
+          >
+            <Timer size={18} aria-hidden />
+          </IconButton>
+        }
       />
       <main className={styles.board} aria-label="Board">
         <BoardCanvas />
         {empty && <EmptyBoard onAdd={addSection} />}
       </main>
+      <PomodoroWidget />
       <ConfirmDeleteDialog />
       <Notice />
     </>

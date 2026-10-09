@@ -28,6 +28,7 @@
   --toolbar-height: 56px;
   --estimate-width: 72px;
   --handle-size: 12px;
+  --timer-width: 248px;
 
   /* Typography */
   --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;

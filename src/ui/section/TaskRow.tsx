@@ -1,4 +1,4 @@
-import { GripVertical, X } from 'lucide-react';
+import { GripVertical, Timer, X } from 'lucide-react';
 import { useLayoutEffect, useState, type KeyboardEvent } from 'react';
 import { formatEstimate } from '../../domain/estimate';
 import type { Subtask, Task } from '../../domain/schema';
@@ -129,6 +129,17 @@ export function TaskRow({
             }}
           />
         )}
+        <button
+          type="button"
+          className={`${styles.delete} nodrag`}
+          aria-label={`Focus on ${name}`}
+          title="Focus on this with the timer"
+          onClick={() => {
+            actions.focusOn(item.id);
+          }}
+        >
+          <Timer size={14} aria-hidden />
+        </button>
         <button
           type="button"
           className={`${styles.delete} nodrag`}
