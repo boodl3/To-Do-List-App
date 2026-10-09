@@ -9,7 +9,7 @@
 export type LoadResult =
   | { kind: 'ok'; json: string }
   | { kind: 'recovered'; json: string; reason: string }
-  | { kind: 'empty' };
+  | { kind: 'empty'; reason?: string }; // reason set when damaged files were set aside
 
 export interface DocumentStore {
   /** `quarantine: true` sets the current file aside and promotes the backup (see ipc-commands.md). */

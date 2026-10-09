@@ -234,7 +234,7 @@ pnpm, ESLint (typescript-eslint strict), Prettier, Stylelint, `rustfmt`, `clippy
 |---|---|---|---|
 | `react`, `react-dom` | UI | MIT | Svelte 5 (R2) |
 | `@xyflow/react` | Board canvas | MIT | tldraw, Konva (R3) |
-| `zustand` + `immer` | Store, immutable snapshots | MIT | Redux Toolkit (R4) |
+| `zustand` | Store | MIT | Redux Toolkit (R4). Immer dropped at implementation: domain functions already return new, structurally shared objects via spreads |
 | `zod` | Schema + validation | MIT | hand-written type guards |
 | `@dnd-kit/core`, `@dnd-kit/sortable` | Task reorder | MIT | native HTML5 DnD (R9) |
 | `lucide-react` | Icons | ISC | inline SVGs |

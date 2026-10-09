@@ -15,12 +15,13 @@ invoke<LoadResult>('load_document', { quarantine?: boolean }): Promise<LoadResul
 type LoadResult =
   | { kind: 'ok'; json: string }                       // contents of focusboard.json
   | { kind: 'recovered'; json: string; reason: string } // main file unreadable → .bak used
-  | { kind: 'empty' }                                  // first launch, no file yet
+  | { kind: 'empty'; reason?: string }                 // first launch, or every file set aside (reason)
 ```
 
-- Reads `<app_data_dir>/focusboard.json`. If missing → `empty`.
-- If the main file fails to *read or parse as JSON*, tries `focusboard.json.bak` → `recovered`
-  and renames the damaged file to `focusboard.corrupt-<epoch>.json` (never deleted).
+- Reads `<app_data_dir>/focusboard.json`. If missing → `empty`. If only `.bak` exists (a save was
+  interrupted), it is promoted to `focusboard.json` and returned as `recovered`.
+- If the main file fails to *read or parse as JSON*, it is set aside and `focusboard.json.bak`
+  is promoted (as with `quarantine`) → `recovered`, or `empty` with a `reason` if no backup exists.
 - **Schema validation and migrations happen in TypeScript**, not Rust — Rust only guarantees
   bytes and JSON syntax. Rationale: one schema source (Zod), tested in the domain layer.
 - `quarantine: true` is used when the TypeScript schema check rejects the loaded file: Rust
