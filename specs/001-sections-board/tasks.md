@@ -228,15 +228,15 @@ persists, and passes WCAG 2.2 AA in both themes.
 
 ### Tests for User Story 4 (write first, watch them fail) ⚠️
 
-- [ ] T092 [P] [US4] Write `src/ui/theme/contrast.test.ts`: parse `tokens.css`/`themes.css` and assert WCAG contrast ≥ 4.5:1 for `--text`/`--text-muted` on every surface and every `--accent-*-text` on `--surface-card`, ≥ 3:1 for `--focus-ring`, `--hairline`-bordered controls and each `--on-accent-*` on its accent, in both themes (Constitution IV, FR-027)
-- [ ] T093 [P] [US4] Write `src/ui/toolbar/ThemeToggle.test.tsx`: two buttons labelled "Light mode" and "Dark mode", the active one has `aria-pressed="true"`; with `prefs.theme = 'system'` the OS value is shown as active; clicking sets `prefs.theme` and is not added to undo history
-- [ ] T094 [US4] Write `tests/e2e/us4-theme.spec.ts` (scenarios 1–4 incl. first launch following `colorScheme` and persistence across reload, no state lost on switch) and `tests/e2e/themes.visual.spec.ts` (screenshot of the `v1` fixture board in each theme)
+- [X] T092 [P] [US4] Write `src/ui/theme/contrast.test.ts`: parse `tokens.css`/`themes.css` and assert WCAG contrast ≥ 4.5:1 for `--text`/`--text-muted` on every surface and every `--accent-*-text` on `--surface-card`, ≥ 3:1 for `--focus-ring`, `--hairline`-bordered controls and each `--on-accent-*` on its accent, in both themes (Constitution IV, FR-027)
+- [X] T093 [P] [US4] Write `src/ui/toolbar/ThemeToggle.test.tsx`: two buttons labelled "Light mode" and "Dark mode", the active one has `aria-pressed="true"`; with `prefs.theme = 'system'` the OS value is shown as active; clicking sets `prefs.theme` and is not added to undo history
+- [X] T094 [US4] Write `tests/e2e/us4-theme.spec.ts` (scenarios 1–4 incl. first launch following `colorScheme` and persistence across reload, no state lost on switch) and `tests/e2e/themes.visual.spec.ts` (screenshot of the `v1` fixture board in each theme)
 
 ### Implementation for User Story 4
 
-- [ ] T095 [US4] Implement `src/ui/toolbar/ThemeToggle.tsx` + `.module.css` (`Sun`/`Moon` icons in a segmented pill, `aria-pressed`) and add it to `src/ui/toolbar/Toolbar.tsx`; action `setTheme` via `updatePrefs` (makes T093 pass)
-- [ ] T096 [US4] Theme cross-fade: transition `background-color`/`color` with `--motion-theme` on themed surfaces in `src/ui/theme/themes.css` (0 ms under reduced motion); ensure `BoardCanvas` `colorMode`, dialogs, `PomodoroWidget` and alignment guides all read semantic tokens
-- [ ] T097 [US4] Adjust any token values in `src/ui/theme/tokens.css` / `themes.css` that fail T092 (e.g. yellow text `#8A6D00` in light mode) until T092 and T094 pass
+- [X] T095 [US4] Implement `src/ui/toolbar/ThemeToggle.tsx` + `.module.css` (`Sun`/`Moon` icons in a segmented pill, `aria-pressed`) and add it to `src/ui/toolbar/Toolbar.tsx`; action `setTheme` via `updatePrefs` (makes T093 pass)
+- [X] T096 [US4] Theme cross-fade: transition `background-color`/`color` with `--motion-theme` on themed surfaces in `src/ui/theme/themes.css` (0 ms under reduced motion); ensure `BoardCanvas` `colorMode`, dialogs, `PomodoroWidget` and alignment guides all read semantic tokens
+- [X] T097 [US4] Adjust any token values in `src/ui/theme/tokens.css` / `themes.css` that fail T092 (e.g. yellow text `#8A6D00` in light mode) until T092 and T094 pass
 
 **Checkpoint**: Both themes complete and accessible.
 

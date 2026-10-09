@@ -10,15 +10,43 @@
 
 .row {
   display: grid;
-  grid-template-columns: auto auto 1fr auto auto auto;
-  gap: var(--space-1);
+  position: relative;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-2);
   align-items: start;
-  padding: var(--space-1) 0;
+  padding: var(--space-1) 0 var(--space-1) var(--space-4);
   border-radius: var(--radius-row);
 }
 
 .row[data-subtask] {
-  padding-left: var(--space-5);
+  padding-left: calc(var(--space-4) + var(--space-5));
+}
+
+/* Drag handle sits in the left gutter; actions overlay the right edge on hover/focus. */
+.handle {
+  position: absolute;
+  top: var(--space-1);
+  left: 0;
+}
+
+.row[data-subtask] .handle {
+  left: var(--space-5);
+}
+
+.actions {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-1);
+  display: flex;
+  gap: var(--space-1);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
+  opacity: 0;
+}
+
+.row:hover .actions,
+.row:focus-within .actions {
+  opacity: 1;
 }
 
 .row:hover,
@@ -46,11 +74,8 @@
 }
 
 .row:hover .handle,
-.row:hover .delete,
 .row:focus-within .handle,
-.row:focus-within .delete,
-.handle:focus-visible,
-.delete:focus-visible {
+.actions .delete {
   opacity: 1;
 }
 
@@ -63,6 +88,7 @@
 }
 
 .text {
+  width: 100%;
   min-width: 0;
   padding: var(--space-1) 0;
   overflow: hidden;

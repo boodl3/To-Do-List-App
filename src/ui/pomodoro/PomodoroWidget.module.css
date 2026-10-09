@@ -10,6 +10,10 @@
   border-radius: var(--radius-timer);
   background: var(--surface-card);
   box-shadow: var(--shadow-card);
+  transition:
+    background-color var(--motion-theme) var(--ease-out),
+    border-color var(--motion-theme) var(--ease-out),
+    color var(--motion-theme) var(--ease-out);
   color: var(--text);
 }
 

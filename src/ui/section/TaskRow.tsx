@@ -129,27 +129,29 @@ export function TaskRow({
             }}
           />
         )}
-        <button
-          type="button"
-          className={`${styles.delete} nodrag`}
-          aria-label={`Focus on ${name}`}
-          title="Focus on this with the timer"
-          onClick={() => {
-            actions.focusOn(item.id);
-          }}
-        >
-          <Timer size={14} aria-hidden />
-        </button>
-        <button
-          type="button"
-          className={`${styles.delete} nodrag`}
-          aria-label={`Delete ${name}`}
-          onClick={() => {
-            actions.deleteItem(sectionId, item.id);
-          }}
-        >
-          <X size={14} aria-hidden />
-        </button>
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={`${styles.delete} nodrag`}
+            aria-label={`Focus on ${name}`}
+            title="Focus on this with the timer"
+            onClick={() => {
+              actions.focusOn(item.id);
+            }}
+          >
+            <Timer size={14} aria-hidden />
+          </button>
+          <button
+            type="button"
+            className={`${styles.delete} nodrag`}
+            aria-label={`Delete ${name}`}
+            onClick={() => {
+              actions.deleteItem(sectionId, item.id);
+            }}
+          >
+            <X size={14} aria-hidden />
+          </button>
+        </div>
       </div>
       {children}
     </li>
