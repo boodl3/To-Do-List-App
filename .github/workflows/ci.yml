@@ -22,7 +22,8 @@ jobs:
       - run: pnpm test:coverage
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm e2e
-      - run: pnpm audit --audit-level high
+      # Release gate covers shipped (runtime) deps; dev-tool advisories are tracked in checklists/release.md.
+      - run: pnpm audit --prod --audit-level high
 
   rust:
     runs-on: ubuntu-latest

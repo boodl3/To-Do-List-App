@@ -46,6 +46,10 @@ function LoadErrorDialog({ error }: { error: string }) {
 
 function Workspace() {
   const addSection = useAddSection();
+  // Cold-start gate (Constitution V): measured from process start to this mark (T116).
+  useEffect(() => {
+    performance.mark('board-ready');
+  }, []);
   const actions = useActions();
   const visible = useVisibleRect();
   const empty = useApp((s) => s.doc.board.sections.length === 0);
