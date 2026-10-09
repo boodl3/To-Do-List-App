@@ -1,0 +1,103 @@
+.trigger {
+  display: grid;
+  place-items: center;
+  width: var(--control-size);
+  height: var(--control-size);
+  margin: calc(var(--space-2) * -1) calc(var(--space-2) * -1) 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.trigger:hover {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+.popover {
+  position: fixed;
+  inset: auto;
+  display: none;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-row);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+  color: var(--text);
+}
+
+.popover:popover-open {
+  display: flex;
+}
+
+.colors {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.swatch {
+  display: grid;
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  cursor: pointer;
+}
+
+.swatch input {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: var(--radius-pill);
+  appearance: none;
+  cursor: pointer;
+}
+
+.swatch input:checked {
+  outline: var(--focus-width) solid var(--text);
+  outline-offset: var(--focus-offset);
+}
+
+.swatch input:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.danger,
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.danger {
+  color: var(--danger);
+}
+
+.danger:hover,
+.item:hover {
+  background: var(--surface-raised);
+}

@@ -21,6 +21,7 @@
   /* Sizes */
   --hairline-width: 1px;
   --focus-width: 2px;
+  --focus-offset: 2px;
   --control-size: 36px;
   --icon-size: 18px;
   --checkbox-size: 18px;

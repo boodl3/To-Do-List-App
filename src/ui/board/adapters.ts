@@ -20,6 +20,9 @@ export function mergeNodes(next: Node[], prev: Node[]): Node[] {
   const byId = new Map(prev.map((n) => [n.id, n]));
   return next.map((n) => {
     const old = byId.get(n.id);
-    return old ? { ...n, measured: old.measured, selected: old.selected } : n;
+    if (!old) return n;
+    // Mid-drag the live position wins over the store (which only updates on drop).
+    const live = old.dragging ? { position: old.position, dragging: true } : {};
+    return { ...n, measured: old.measured, selected: old.selected, ...live };
   });
 }

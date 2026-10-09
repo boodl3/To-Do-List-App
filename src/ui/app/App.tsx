@@ -1,16 +1,19 @@
 import { ReactFlowProvider } from '@xyflow/react';
-import { Plus } from 'lucide-react';
+import { LayoutGrid, Plus } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { startFresh } from '../../state/boot';
 import { useApp, useAppStore } from '../../state/selectors';
 import { BoardCanvas } from '../board/BoardCanvas';
 import { EmptyBoard } from '../board/EmptyBoard';
 import { useAddSection } from '../board/useAddSection';
+import { useVisibleRect } from '../board/useVisibleRect';
+import { ConfirmDeleteDialog } from '../section/ConfirmDeleteDialog';
 import { IconButton, Toolbar } from '../toolbar/Toolbar';
 import { useResolvedTheme } from '../theme/useResolvedTheme';
 import { Notice } from './Notice';
 import { usePlatform } from './PlatformProvider';
 import { useGlobalShortcuts } from './shortcuts';
+import { useActions } from './useActions';
 import styles from './App.module.css';
 
 function LoadErrorDialog({ error }: { error: string }) {
@@ -40,20 +43,34 @@ function LoadErrorDialog({ error }: { error: string }) {
 
 function Workspace() {
   const addSection = useAddSection();
+  const actions = useActions();
+  const visible = useVisibleRect();
   const empty = useApp((s) => s.doc.board.sections.length === 0);
   return (
     <>
       <Toolbar
         start={
-          <IconButton label="New section" onClick={addSection}>
-            <Plus size={18} aria-hidden />
-          </IconButton>
+          <>
+            <IconButton label="New section" onClick={addSection}>
+              <Plus size={18} aria-hidden />
+            </IconButton>
+            <IconButton
+              label="Tidy up"
+              disabled={empty}
+              onClick={() => {
+                actions.tidyUp(visible().width);
+              }}
+            >
+              <LayoutGrid size={18} aria-hidden />
+            </IconButton>
+          </>
         }
       />
       <main className={styles.board} aria-label="Board">
         <BoardCanvas />
         {empty && <EmptyBoard onAdd={addSection} />}
       </main>
+      <ConfirmDeleteDialog />
       <Notice />
     </>
   );

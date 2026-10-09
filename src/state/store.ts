@@ -11,6 +11,8 @@ export interface AppState {
   notice: string | null;
   /** Transient UI: id of the field that should take focus next (new task, new section, …). */
   focusRequest: string | null;
+  /** Transient UI: section awaiting delete confirmation. */
+  confirmDeleteId: string | null;
   history: H.History;
   hydrate: (doc: AppDocument) => void;
   fail: (error: string) => void;
@@ -25,6 +27,7 @@ export interface AppState {
   updatePrefs: (update: (p: Preferences) => Preferences) => void;
   setNotice: (notice: string | null) => void;
   requestFocus: (id: string | null) => void;
+  setConfirmDelete: (id: string | null) => void;
 }
 
 export type AppStore = ReturnType<typeof createAppStore>;
@@ -36,6 +39,7 @@ export function createAppStore(platform: Pick<Platform, 'clock'>) {
     error: null,
     notice: null,
     focusRequest: null,
+    confirmDeleteId: null,
     history: H.emptyHistory,
 
     hydrate: (doc) => {
@@ -82,6 +86,9 @@ export function createAppStore(platform: Pick<Platform, 'clock'>) {
     },
     requestFocus(focusRequest) {
       set({ focusRequest });
+    },
+    setConfirmDelete(confirmDeleteId) {
+      set({ confirmDeleteId });
     },
   }));
 }
