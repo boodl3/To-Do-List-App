@@ -9,6 +9,7 @@ import { useAddSection } from '../board/useAddSection';
 import { useVisibleRect } from '../board/useVisibleRect';
 import { PomodoroWidget } from '../pomodoro/PomodoroWidget';
 import { ConfirmDeleteDialog } from '../section/ConfirmDeleteDialog';
+import { PinButton } from '../toolbar/PinButton';
 import { ThemeToggle } from '../toolbar/ThemeToggle';
 import { IconButton, Toolbar } from '../toolbar/Toolbar';
 import { useResolvedTheme } from '../theme/useResolvedTheme';
@@ -71,6 +72,7 @@ function Workspace() {
         end={
           <>
             <ThemeToggle />
+            <PinButton />
             <IconButton
               label="Timer"
               pressed={timerVisible}

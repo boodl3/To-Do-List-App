@@ -251,14 +251,14 @@ persists, and passes WCAG 2.2 AA in both themes.
 
 ### Tests for User Story 5 (write first, watch them fail) ⚠️
 
-- [ ] T098 [P] [US5] Write `src/ui/toolbar/PinButton.test.tsx` with fake `WindowControls`: click → `setPinned(true)` resolves true → `aria-pressed="true"` and tooltip/name "Unpin from top"; click again → unpinned, name "Pin on top"; when `setPinned` resolves false or rejects → stays unpressed and notice "Couldn't keep the window on top." appears; not added to undo history
-- [ ] T099 [US5] Write `tests/e2e/us5-pin.spec.ts` (fake adapter): scenarios 1–4 incl. `refusePin` and pinned state restored after `reopenApp`
+- [X] T098 [P] [US5] Write `src/ui/toolbar/PinButton.test.tsx` with fake `WindowControls`: click → `setPinned(true)` resolves true → `aria-pressed="true"` and tooltip/name "Unpin from top"; click again → unpinned, name "Pin on top"; when `setPinned` resolves false or rejects → stays unpressed and notice "Couldn't keep the window on top." appears; not added to undo history
+- [X] T099 [US5] Write `tests/e2e/us5-pin.spec.ts` (fake adapter): scenarios 1–4 incl. `refusePin` and pinned state restored after `reopenApp`
 
 ### Implementation for User Story 5
 
-- [ ] T100 [P] [US5] Implement `src/platform/tauri/window.ts` (`getCurrentWindow().setAlwaysOnTop(p)` then return `isAlwaysOnTop()`; return `false` on rejection) and replace the fake window adapter in `src/platform/tauri/index.ts`
-- [ ] T101 [US5] Implement `src/ui/toolbar/PinButton.tsx` (`Pin`/`PinOff` icons, `aria-pressed`, `title`) and add it to `src/ui/toolbar/Toolbar.tsx`; action `setPinned` in `src/state/store.ts` updates `prefs.pinned` only to the value the OS applied (makes T098 pass)
-- [ ] T102 [US5] On boot in `src/ui/app/App.tsx`, if `prefs.pinned` call `platform.window.setPinned(true)` and store the applied result (makes T099 pass)
+- [X] T100 [P] [US5] Implement `src/platform/tauri/window.ts` (`getCurrentWindow().setAlwaysOnTop(p)` then return `isAlwaysOnTop()`; return `false` on rejection) and replace the fake window adapter in `src/platform/tauri/index.ts`
+- [X] T101 [US5] Implement `src/ui/toolbar/PinButton.tsx` (`Pin`/`PinOff` icons, `aria-pressed`, `title`) and add it to `src/ui/toolbar/Toolbar.tsx`; action `setPinned` in `src/state/store.ts` updates `prefs.pinned` only to the value the OS applied (makes T098 pass)
+- [X] T102 [US5] On boot in `src/ui/app/App.tsx`, if `prefs.pinned` call `platform.window.setPinned(true)` and store the applied result (makes T099 pass)
 
 **Checkpoint**: Pin works; verify manually on Windows and macOS (note the macOS full-screen Spaces limitation from research R7).
 

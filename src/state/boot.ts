@@ -71,6 +71,7 @@ export async function boot(platform: Platform, store: AppStore): Promise<void> {
   }
   autosave(platform, store);
   startTimer(platform, store);
+  if (store.getState().doc.prefs.pinned) void createActions(store, platform).setPinned(true);
 }
 
 /** Used by the load-error dialog after an unrecoverable I/O failure. */

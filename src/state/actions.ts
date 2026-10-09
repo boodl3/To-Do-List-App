@@ -18,7 +18,10 @@ export const addRowFocusId = (sectionId: string) => `add:${sectionId}`;
 export const titleFocusId = (sectionId: string) => `title:${sectionId}`;
 
 /** User intents → pure domain functions → one store update (and undo step) each. */
-export function createActions(store: AppStore, platform: Pick<Platform, 'clock' | 'timer'>) {
+export function createActions(
+  store: AppStore,
+  platform: Pick<Platform, 'clock' | 'timer' | 'window'>,
+) {
   const state = () => store.getState();
   const now = () => platform.clock.now();
   const pomodoro = () => state().doc.pomodoro;
@@ -209,6 +212,12 @@ export function createActions(store: AppStore, platform: Pick<Platform, 'clock' 
     },
     setWidget(patch: Partial<{ x: number; y: number; visible: boolean }>) {
       state().updatePomodoro((p) => ({ ...p, widget: { ...p.widget, ...patch } }));
+    },
+    /** Always-on-top (FR-025): store only what the OS actually applied. */
+    async setPinned(pinned: boolean) {
+      const applied = await platform.window.setPinned(pinned).catch(() => false);
+      state().updatePrefs((p) => ({ ...p, pinned: applied }));
+      if (applied !== pinned) state().setNotice("Couldn't keep the window on top.");
     },
     focusOn(taskId: string) {
       state().updatePomodoro((p) => ({
