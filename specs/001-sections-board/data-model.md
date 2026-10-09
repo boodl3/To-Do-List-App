@@ -10,7 +10,7 @@ validated with Zod at load time; the published JSON Schema is
 
 ```text
 AppDocument (persisted, schemaVersion = 1)
-├── board: Board                    ← undo/redo applies here only
+├── board: Board                    ← undo/redo applies here only (except viewport)
 │   ├── sections: Section[]         (array order = z-order, last = on top)
 │   │   └── tasks: Task[]           (array order = display order)
 │   │       └── subtasks: Subtask[] (one level only)
@@ -171,7 +171,10 @@ format(m) := m < 60 ? "{m}m" : (m % 60 == 0 ? "{h}h" : "{h}h {m}m")
   right, and `right + 24` / `left − 24`; same for y. Snap if within 6 px (screen space).
 - **Free-spot placement**: scan candidate positions on the 8 px grid in an outward spiral from
   the viewport center; first rectangle (inflated by 24 px) that intersects no section wins.
-- **Tidy-up**: sort sections by `(row band of y, x, createdAt)`; lay out left→right, wrapping
+- **Tidy-up**: order sections into *row bands*: sort by `(y, createdAt)`; a section joins the
+  current band if its `y` is within 80 px (half the minimum section height) of the `y` of the
+  band's first section, otherwise it starts a new band; inside a band sort by `(x, createdAt)`.
+  Concatenate the bands in order, then lay out left→right, wrapping
   to a new row when the next card would exceed the current row width target
   (`max(viewport width, widest section)`); gaps exactly 24 px; row height = tallest card.
 

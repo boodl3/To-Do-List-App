@@ -143,7 +143,8 @@ sit side by side; E2E tests live in `tests/e2e`.
 3. **Time has one source of truth: `endsAt`.** UI derives remaining time; Rust schedules the
    completion so background throttling can't delay the alert.
 4. **Undo = immutable snapshots of `board` only.** Theme, pin, and timer actions are excluded
-   (spec Edge Case "Undo scope").
+   (spec Edge Case "Undo scope"). The viewport (pan/zoom) is excluded too: applying a snapshot
+   keeps the current viewport, so undo never jumps the view.
 5. **Theme** = `data-theme` attribute on `<html>` + React Flow `colorMode`, both driven by
    `prefs.theme` (resolving `system` via the `SystemTheme` port).
 6. **"Evenly spaced"** = 8 pt token scale + 8 px snap + 24 px board gap + guides + tidy-up.
