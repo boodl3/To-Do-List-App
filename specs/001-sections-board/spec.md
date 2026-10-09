@@ -52,7 +52,7 @@ and verify everything is exactly as left.
 8. **Given** a task, **When** the user ticks its checkbox, **Then** it is shown as done
    (struck through, de-emphasized) and the section's remaining total and progress update
    immediately. Ticking a parent task marks all its subtasks done; ticking every subtask
-   marks the parent done.
+   marks the parent done; un-ticking a parent un-ticks all its subtasks.
 9. **Given** a task, **When** the user deletes it, **Then** it and its subtasks are removed
    and the user can undo the deletion.
 10. **Given** a task, **When** the user drags it (or uses a keyboard shortcut) to a new
@@ -278,7 +278,8 @@ confirm the arrow follows; switch the connection to a plain line, add a label, t
 - **FR-014**: Each section MUST display the total estimate of its incomplete items and a
   completed/total progress indicator, updating immediately on any change.
 - **FR-015**: Completing a parent MUST complete all its subtasks; completing all subtasks MUST
-  complete the parent; un-completing any subtask MUST un-complete the parent.
+  complete the parent; un-completing any subtask MUST un-complete the parent; un-completing a
+  parent MUST un-complete all its subtasks.
 
 **Connections**
 

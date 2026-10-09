@@ -124,11 +124,14 @@ Counting *leaf* items for progress avoids double-counting a parent and its subta
 ### Task completion (FR-015)
 
 ```text
-toggle(parent → done)        ⇒ parent.done = true;  all subtasks.done = true
-toggle(parent → not done)    ⇒ parent.done = false; subtasks unchanged
-toggle(subtask → done)       ⇒ if all siblings done → parent.done = true
-toggle(subtask → not done)   ⇒ parent.done = false
+Invariant: a task with subtasks is done exactly when all its subtasks are done.
+
+toggle(parent → done / not done) ⇒ every subtask set to the same value
+toggle(subtask)                  ⇒ that subtask changes; parent.done recomputed
 ```
+
+`tasks.ts` restores the invariant after every operation (add, delete, indent, outdent, toggle),
+so the stored `done` of a parent is never stale.
 
 ### Pomodoro state machine (FR-020 – FR-022)
 

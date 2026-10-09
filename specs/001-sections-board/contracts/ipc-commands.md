@@ -10,7 +10,7 @@ API enabled by a single permission, or does not exist.
 ### `load_document`
 
 ```ts
-invoke<LoadResult>('load_document'): Promise<LoadResult>
+invoke<LoadResult>('load_document', { quarantine?: boolean }): Promise<LoadResult>
 
 type LoadResult =
   | { kind: 'ok'; json: string }                       // contents of focusboard.json
@@ -23,8 +23,14 @@ type LoadResult =
   and renames the damaged file to `focusboard.corrupt-<epoch>.json` (never deleted).
 - **Schema validation and migrations happen in TypeScript**, not Rust — Rust only guarantees
   bytes and JSON syntax. Rationale: one schema source (Zod), tested in the domain layer.
+- `quarantine: true` is used when the TypeScript schema check rejects the loaded file: Rust
+  renames `focusboard.json` → `focusboard.corrupt-<epoch>.json`, then promotes
+  `focusboard.json.bak` to `focusboard.json` and returns it as `recovered`, or returns `empty`
+  if there is no backup. Calling it again quarantines the promoted file too. No file is ever
+  overwritten or deleted, so a later `save_document` cannot destroy damaged data.
 - Errors: `Err(String)` only for I/O failures where neither file is usable; the UI shows a
-  blocking dialog with "Start fresh" and "Open data folder" options.
+  blocking dialog with "Start fresh" and the data-folder path as selectable text (no `opener`
+  permission is granted, see Constitution VI).
 
 ### `save_document`
 
@@ -78,10 +84,11 @@ invoke<void>('cancel_timer_completion', { sessionId: string }): Promise<void>
 | Pin on top | `getCurrentWindow().setAlwaysOnTop(bool)` | `core:window:allow-set-always-on-top` |
 | Read pinned state on launch | `getCurrentWindow().isAlwaysOnTop()` | `core:window:allow-is-always-on-top` |
 | Event listening | `listen('pomodoro://completed', …)` | `core:event:default` |
-| Window size/position | `tauri-plugin-window-state` (Rust-side, automatic) | `window-state:default` |
+| Window size/position | `tauri-plugin-window-state` (Rust-side, automatic) | none (no webview access needed) |
 | Notification permission check | `isPermissionGranted()` / `requestPermission()` | `notification:default` |
 
-**Explicitly NOT granted**: `fs:*`, `shell:*`, `http:*`, `opener:*`. No remote URLs are
+**Explicitly NOT granted**: `core:default` (bundles path, menu, tray, webview, image and
+resources permissions the app does not use), `window-state:*`, `fs:*`, `shell:*`, `http:*`, `opener:*`. No remote URLs are
 loaded; CSP: `default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'`
 (`unsafe-inline` styles are required by React Flow's inline positioning styles — scripts stay
 strict).

@@ -12,7 +12,8 @@ export type LoadResult =
   | { kind: 'empty' };
 
 export interface DocumentStore {
-  load(): Promise<LoadResult>;
+  /** `quarantine: true` sets the current file aside and promotes the backup (see ipc-commands.md). */
+  load(opts?: { quarantine?: boolean }): Promise<LoadResult>;
   /** Atomic on the Rust side; callers may fire-and-forget but should surface rejections. */
   save(json: string): Promise<void>;
 }

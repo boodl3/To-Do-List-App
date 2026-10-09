@@ -18,9 +18,14 @@ Check the Tauri 2 prerequisites page for the current list before scaffolding —
 
 ## Scaffold (Phase 0 of tasks)
 
+Never run the scaffolder inside the repo: on a non-empty folder it offers to delete existing
+files. Scaffold in a temporary folder outside the repo, then copy its files into the repo root
+without overwriting `.gitignore` (merge it), `.specify/`, `specs/` or `.claude/`.
+
 ```bash
+# from a folder OUTSIDE the repo
 pnpm create tauri-app focusboard --template react-ts --manager pnpm
-cd focusboard
+# copy focusboard/* into the repo root (see above), then from the repo root:
 pnpm add @xyflow/react zustand immer zod @dnd-kit/core @dnd-kit/sortable lucide-react
 pnpm add @tauri-apps/plugin-notification
 pnpm add -D vitest @vitest/coverage-v8 fast-check @testing-library/react @testing-library/user-event \
@@ -28,8 +33,6 @@ pnpm add -D vitest @vitest/coverage-v8 fast-check @testing-library/react @testin
 cd src-tauri && cargo add tauri-plugin-notification tauri-plugin-window-state && cd ..
 ```
 
-Then copy this `specs/` folder and `.specify/memory/constitution.md` into the repo (if they
-are not already there) and commit them before any code (see plan → Git Workflow).
 
 ## Run
 

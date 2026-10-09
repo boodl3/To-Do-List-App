@@ -225,3 +225,22 @@ behaviours are covered by Rust tests plus a short manual smoke test.
 
 pnpm, ESLint (typescript-eslint strict), Prettier, Stylelint, `rustfmt`, `clippy`,
 `cargo audit`, GitHub Actions (lint → unit → e2e on ubuntu; `tauri build` on windows + macos).
+
+---
+
+## R13. Runtime dependency register (Constitution: Technology & Quality Standards)
+
+| Dependency | Purpose | License | Alternative considered |
+|---|---|---|---|
+| `react`, `react-dom` | UI | MIT | Svelte 5 (R2) |
+| `@xyflow/react` | Board canvas | MIT | tldraw, Konva (R3) |
+| `zustand` + `immer` | Store, immutable snapshots | MIT | Redux Toolkit (R4) |
+| `zod` | Schema + validation | MIT | hand-written type guards |
+| `@dnd-kit/core`, `@dnd-kit/sortable` | Task reorder | MIT | native HTML5 DnD (R9) |
+| `lucide-react` | Icons | ISC | inline SVGs |
+| `tauri`, `@tauri-apps/api` | Shell + IPC | MIT / Apache-2.0 | Electron (R1) |
+| `tauri-plugin-notification` (+ JS) | Native notifications | MIT / Apache-2.0 | none built in |
+| `tauri-plugin-window-state` | Window size/position | MIT / Apache-2.0 | hand-rolled in `storage.rs` |
+| `tokio` (already a Tauri dependency) | Timer sleep/cancel | MIT | `std::thread` + sleep (cancellation is messier) |
+| `serde`, `serde_json` | IPC (de)serialization | MIT / Apache-2.0 | none |
+| Inter (font file) | Typography | SIL OFL 1.1 | system font stack |
