@@ -1,5 +1,5 @@
-import type { Node } from '@xyflow/react';
-import type { Section } from '../../domain/schema';
+import { MarkerType, type Edge, type Node } from '@xyflow/react';
+import type { Connection, Section } from '../../domain/schema';
 
 /** The only place domain sections become React Flow nodes (Constitution III). */
 export function toNodes(sections: readonly Section[]): Node[] {
@@ -25,4 +25,22 @@ export function mergeNodes(next: Node[], prev: Node[]): Node[] {
     const live = old.dragging ? { position: old.position, dragging: true } : {};
     return { ...n, measured: old.measured, selected: old.selected, ...live };
   });
+}
+
+export interface ConnectionEdgeData extends Record<string, unknown> {
+  label: string;
+  style: Connection['style'];
+}
+
+export function toEdges(connections: readonly Connection[], selectedId: string | null): Edge[] {
+  return connections.map((c) => ({
+    id: c.id,
+    source: c.from,
+    target: c.to,
+    type: 'connection',
+    selected: c.id === selectedId,
+    markerEnd:
+      c.style === 'arrow' ? { type: MarkerType.ArrowClosed, width: 18, height: 18 } : undefined,
+    data: { label: c.label, style: c.style } satisfies ConnectionEdgeData,
+  }));
 }

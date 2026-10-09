@@ -1,4 +1,4 @@
-import { NodeResizer, type NodeProps } from '@xyflow/react';
+import { Handle, NodeResizer, Position, type NodeProps } from '@xyflow/react';
 import { memo } from 'react';
 import { MIN_SECTION } from '../../domain/defaults';
 import { useApp } from '../../state/selectors';
@@ -27,6 +27,9 @@ export const SectionNode = memo(function SectionNode({ id, selected }: NodeProps
           actions.endGesture();
         }}
       />
+      {[Position.Top, Position.Right, Position.Bottom, Position.Left].map((p) => (
+        <Handle key={p} id={p} type="source" position={p} className={styles.handle} />
+      ))}
       <div
         className={styles.card}
         data-accent={section.accent}

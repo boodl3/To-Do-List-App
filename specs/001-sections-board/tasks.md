@@ -274,19 +274,19 @@ delete (spec US6; quickstart Manual validation 6). Requires US1 and US2.
 
 ### Tests for User Story 6 (write first, watch them fail) ⚠️
 
-- [ ] T103 [P] [US6] Write `src/domain/connections.test.ts`: `connect(board, { id, from, to })` creates an `arrow` with empty label; rejects `from === to` and duplicates with the same `(from, to)` (opposite direction is allowed); `canConnect` mirrors those rules; `restyle`; `reverse` (rejected if it would duplicate); `setLabel` clamps to 40 chars; `removeConnection`; every result keeps from/to referencing existing sections
-- [ ] T104 [P] [US6] Write `src/ui/board/edgeGeometry.test.ts`: `attachPoints(fromRect, toRect)` returns points on each rectangle's border along the centre-to-centre line, for left/right/above/below and overlapping cases
-- [ ] T105 [US6] Write `tests/e2e/us6-connections.spec.ts`: scenarios 1–5 (drag from edge handle creates arrow, follows a moved/resized section, toolbar switch to line / reverse / label "then" / delete, self and duplicate rejected, delete section removes its connections and undo restores both, and a connection created with the keyboard only via "Connect to…")
+- [X] T103 [P] [US6] Write `src/domain/connections.test.ts`: `connect(board, { id, from, to })` creates an `arrow` with empty label; rejects `from === to` and duplicates with the same `(from, to)` (opposite direction is allowed); `canConnect` mirrors those rules; `restyle`; `reverse` (rejected if it would duplicate); `setLabel` clamps to 40 chars; `removeConnection`; every result keeps from/to referencing existing sections
+- [X] T104 [P] [US6] Write `src/ui/board/edgeGeometry.test.ts`: `attachPoints(fromRect, toRect)` returns points on each rectangle's border along the centre-to-centre line, for left/right/above/below and overlapping cases
+- [X] T105 [US6] Write `tests/e2e/us6-connections.spec.ts`: scenarios 1–5 (drag from edge handle creates arrow, follows a moved/resized section, toolbar switch to line / reverse / label "then" / delete, self and duplicate rejected, delete section removes its connections and undo restores both, and a connection created with the keyboard only via "Connect to…")
 
 ### Implementation for User Story 6
 
-- [ ] T106 [P] [US6] Implement `src/domain/connections.ts` (makes T103 pass)
-- [ ] T107 [P] [US6] Implement `src/ui/board/edgeGeometry.ts` (makes T104 pass)
-- [ ] T108 [US6] Add store actions `connect`, `restyleConnection`, `reverseConnection`, `labelConnection`, `removeConnection` (one history entry each) in `src/state/store.ts`
-- [ ] T109 [US6] Extend `src/ui/board/adapters.ts` with `toEdges(board)` (`type: 'connection'`, `markerEnd` arrow only for `style: 'arrow'`) and add four connection `<Handle>`s (one per side, visible on hover/focus, keyboard focusable) to `src/ui/board/SectionNode.tsx`; wire `onConnect` + `isValidConnection` (uses `canConnect`) in `src/ui/board/BoardCanvas.tsx` with `connectionMode="loose"`
-- [ ] T110 [US6] Implement `src/ui/board/ConnectionEdge.tsx`: floating edge using `edgeGeometry.attachPoints` from live node rects, `--text-muted` stroke (selected → accent), label via `<EdgeLabelRenderer>` rendered as text
-- [ ] T111 [US6] Implement `src/ui/board/EdgeToolbar.tsx` (shown for the selected edge: Arrow/Line toggle, Reverse, label input max 40, Delete; Delete/Backspace key removes the selected edge)
-- [ ] T112 [US6] Implement "Connect to…" in the section header menu as `src/ui/section/ConnectMenu.tsx`: lists other sections by title, entries where `canConnect` is false are disabled, choosing one calls `connect` (keyboard path for Constitution IV) (makes T105 pass)
+- [X] T106 [P] [US6] Implement `src/domain/connections.ts` (makes T103 pass)
+- [X] T107 [P] [US6] Implement `src/ui/board/edgeGeometry.ts` (makes T104 pass)
+- [X] T108 [US6] Add store actions `connect`, `restyleConnection`, `reverseConnection`, `labelConnection`, `removeConnection` (one history entry each) in `src/state/store.ts`
+- [X] T109 [US6] Extend `src/ui/board/adapters.ts` with `toEdges(board)` (`type: 'connection'`, `markerEnd` arrow only for `style: 'arrow'`) and add four connection `<Handle>`s (one per side, visible on hover/focus, keyboard focusable) to `src/ui/board/SectionNode.tsx`; wire `onConnect` + `isValidConnection` (uses `canConnect`) in `src/ui/board/BoardCanvas.tsx` with `connectionMode="loose"`
+- [X] T110 [US6] Implement `src/ui/board/ConnectionEdge.tsx`: floating edge using `edgeGeometry.attachPoints` from live node rects, `--text-muted` stroke (selected → accent), label via `<EdgeLabelRenderer>` rendered as text
+- [X] T111 [US6] Implement `src/ui/board/EdgeToolbar.tsx` (shown for the selected edge: Arrow/Line toggle, Reverse, label input max 40, Delete; Delete/Backspace key removes the selected edge)
+- [X] T112 [US6] Implement "Connect to…" in the section header menu as `src/ui/section/ConnectMenu.tsx`: lists other sections by title, entries where `canConnect` is false are disabled, choosing one calls `connect` (keyboard path for Constitution IV) (makes T105 pass)
 
 **Checkpoint**: All six user stories work independently and together.
 

@@ -1,14 +1,15 @@
 import { MoreHorizontal, Trash2 } from 'lucide-react';
-import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { ACCENTS } from '../../domain/defaults';
 import type { Section } from '../../domain/schema';
 import { useActions } from '../app/useActions';
+import { ConnectMenu } from './ConnectMenu';
 import styles from './SectionMenu.module.css';
 
 const label = (s: string) => s[0]!.toUpperCase() + s.slice(1);
 
 /** Section options in a native popover (top layer, so the card's rounded clip can't cut it). */
-export function SectionMenu({ section, extra }: { section: Section; extra?: ReactNode }) {
+export function SectionMenu({ section }: { section: Section }) {
   const actions = useActions();
   const id = useId();
   const button = useRef<HTMLButtonElement>(null);
@@ -69,7 +70,12 @@ export function SectionMenu({ section, extra }: { section: Section; extra?: Reac
             </label>
           ))}
         </fieldset>
-        {extra}
+        <ConnectMenu
+          sectionId={section.id}
+          onDone={() => {
+            popover.current?.hidePopover();
+          }}
+        />
         <button
           type="button"
           className={styles.danger}

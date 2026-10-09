@@ -5,7 +5,8 @@ import { snapRect } from '../domain/layout/snap';
 import { tidy } from '../domain/layout/tidy';
 import * as S from '../domain/sections';
 import { createSection, renameSection, updateSection } from '../domain/sections';
-import type { Accent, Section, Viewport } from '../domain/schema';
+import type { Accent, Connection, Section, Viewport } from '../domain/schema';
+import * as C from '../domain/connections';
 import * as P from '../domain/pomodoro';
 import type { PomodoroSettings } from '../domain/schema';
 import * as T from '../domain/tasks';
@@ -119,6 +120,22 @@ export function createActions(
     /** Pan/zoom is saved but never undoable. */
     setViewport(viewport: Viewport) {
       state().updateBoard((b) => ({ ...b, viewport }), { history: false });
+    },
+    // Connections (US6). Each is one undo step.
+    connect(from: string, to: string) {
+      state().updateBoard((b) => C.connect(b, { id: newId(), from, to }));
+    },
+    restyleConnection(id: string, style: Connection['style']) {
+      state().updateBoard((b) => C.restyle(b, id, style));
+    },
+    reverseConnection(id: string) {
+      state().updateBoard((b) => C.reverse(b, id));
+    },
+    labelConnection(id: string, label: string) {
+      state().updateBoard((b) => C.setLabel(b, id, label));
+    },
+    removeConnection(id: string) {
+      state().updateBoard((b) => C.removeConnection(b, id));
     },
     renameSection(sectionId: string, title: string) {
       state().updateBoard((b) => renameSection(b, sectionId, title));

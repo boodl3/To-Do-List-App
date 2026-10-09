@@ -23,3 +23,19 @@
   padding: var(--space-2) var(--space-2) var(--space-3);
   overflow-y: auto;
 }
+
+/* Connection handles: visible on hover/selection (React Flow positions them on each edge). */
+.handle {
+  width: var(--handle-size);
+  height: var(--handle-size);
+  border: 1px solid var(--control-border);
+  background: var(--surface-card);
+  opacity: 0;
+  transition: opacity var(--motion-fast) var(--ease-out);
+}
+
+:global(.react-flow__node:hover) .handle,
+:global(.react-flow__node.selected) .handle,
+:global(.react-flow.connecting) .handle {
+  opacity: 1;
+}

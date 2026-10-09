@@ -2,11 +2,14 @@ import {
   applyNodeChanges,
   Background,
   BackgroundVariant,
+  ConnectionMode,
   ReactFlow,
+  type EdgeChange,
   type Node,
   type NodeChange,
 } from '@xyflow/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { canConnect } from '../../domain/connections';
 import { BOARD_GAP, GRID } from '../../domain/defaults';
 import { findGuides, type Guide } from '../../domain/layout/guides';
 import { snap } from '../../domain/layout/snap';
@@ -14,12 +17,14 @@ import { useApp, useBoard } from '../../state/selectors';
 import { isTextEntry } from '../app/shortcuts';
 import { useActions } from '../app/useActions';
 import { useResolvedTheme } from '../theme/useResolvedTheme';
-import { mergeNodes, toNodes } from './adapters';
+import { mergeNodes, toEdges, toNodes } from './adapters';
+import { ConnectionEdge } from './ConnectionEdge';
 import { AlignmentGuides } from './AlignmentGuides';
 import { SectionNode } from './SectionNode';
 import { ZoomControls } from './ZoomControls';
 
 const nodeTypes = { section: SectionNode };
+const edgeTypes = { connection: ConnectionEdge };
 const GUIDE_THRESHOLD_PX = 6;
 const ARROWS: Record<string, [number, number]> = {
   ArrowLeft: [-1, 0],
@@ -47,11 +52,19 @@ function useAltKey() {
   return alt;
 }
 
-/** Arrow keys move the focused section; Ctrl/Cmd+arrows resize; Delete removes it. */
-function useSectionKeyboard() {
+/**
+ * Arrow keys move the focused section; Ctrl/Cmd+arrows resize; Delete removes it.
+ * Delete/Backspace also removes the selected connection.
+ */
+function useSectionKeyboard(selectedEdge: string | null) {
   const actions = useActions();
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (selectedEdge && (e.key === 'Delete' || e.key === 'Backspace') && !isTextEntry(e.target)) {
+        actions.removeConnection(selectedEdge);
+        e.preventDefault();
+        return;
+      }
       const el = document.activeElement;
       if (!(el instanceof HTMLElement) || !el.classList.contains('react-flow__node')) return;
       if (isTextEntry(e.target)) return;
@@ -74,7 +87,7 @@ function useSectionKeyboard() {
     return () => {
       window.removeEventListener('keydown', onKey, true);
     };
-  }, [actions]);
+  }, [actions, selectedEdge]);
 }
 
 export function BoardCanvas() {
@@ -91,7 +104,19 @@ export function BoardCanvas() {
     setSynced(board.sections);
     setNodes((prev) => mergeNodes(toNodes(board.sections), prev));
   }
-  useSectionKeyboard();
+  const [selectedEdge, setSelectedEdge] = useState<string | null>(null);
+  const edges = useMemo(
+    () => toEdges(board.connections, selectedEdge),
+    [board.connections, selectedEdge],
+  );
+  useSectionKeyboard(selectedEdge);
+
+  const onEdgesChange = (changes: EdgeChange[]) => {
+    for (const c of changes) {
+      if (c.type === 'select')
+        setSelectedEdge((cur) => (c.selected ? c.id : cur === c.id ? null : cur));
+    }
+  };
 
   /** Grid snap, then neighbours' guides (FR-003, FR-004); Alt bypasses both. */
   const place = (id: string, raw: { x: number; y: number }) => {
@@ -115,7 +140,15 @@ export function BoardCanvas() {
   return (
     <ReactFlow
       nodes={nodes}
+      edges={edges}
       onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnect={({ source, target }) => {
+        actions.connect(source, target);
+      }}
+      isValidConnection={({ source, target }) => canConnect(board, source, target)}
+      connectionMode={ConnectionMode.Loose}
+      edgeTypes={edgeTypes}
       onNodeDragStart={(_, node) => {
         actions.startGesture(node.id);
       }}
@@ -139,7 +172,6 @@ export function BoardCanvas() {
       panActivationKeyCode="Space"
       zoomActivationKeyCode={['Control', 'Meta']}
       selectionOnDrag={false}
-      nodesConnectable={false}
       deleteKeyCode={null}
       proOptions={{ hideAttribution: true }}
     >

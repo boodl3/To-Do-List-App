@@ -25,3 +25,8 @@
   outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);
 }
+
+/* Connection labels and their toolbar sit above section cards, which are often only 24 px apart. */
+.react-flow__edgelabel-renderer {
+  z-index: 1000;
+}
