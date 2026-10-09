@@ -47,3 +47,39 @@
   border-color: var(--control-border);
   background: var(--surface-raised);
 }
+
+.wide {
+  display: contents;
+}
+
+.more {
+  display: none;
+}
+
+.menu {
+  position: fixed;
+  inset: var(--toolbar-height) var(--space-2) auto auto;
+  margin: 0;
+  padding: var(--space-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-row);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+  color: var(--text);
+}
+
+.menu:popover-open {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+@media (width < 640px) {
+  .wide {
+    display: none;
+  }
+
+  .more {
+    display: contents;
+  }
+}

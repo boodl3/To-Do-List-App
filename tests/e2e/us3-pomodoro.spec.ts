@@ -96,6 +96,7 @@ test.describe('US3 — focus with a movable Pomodoro timer', () => {
     await newSection(page, 'S');
     await page.getByRole('textbox', { name: 'Add a task' }).fill('Problem set');
     await page.getByRole('textbox', { name: 'Add a task' }).press('Enter');
+    await page.getByRole('textbox', { name: 'Task Problem set' }).hover();
     await page.getByRole('button', { name: 'Focus on Problem set' }).click();
     await expect(widget(page)).toContainText('Focusing on Problem set');
   });

@@ -12,7 +12,22 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
   },
   projects: [
-    { name: 'light', use: { ...devices['Desktop Chrome'], colorScheme: 'light' } },
-    { name: 'dark', use: { ...devices['Desktop Chrome'], colorScheme: 'dark' } },
+    {
+      name: 'light',
+      testIgnore: /perf\.spec/,
+      use: { ...devices['Desktop Chrome'], colorScheme: 'light' },
+    },
+    {
+      name: 'dark',
+      testIgnore: /perf\.spec/,
+      use: { ...devices['Desktop Chrome'], colorScheme: 'dark' },
+    },
+    // Frame timing needs an idle machine: run alone, after everything else.
+    {
+      name: 'perf',
+      testMatch: /perf\.spec/,
+      dependencies: ['light', 'dark'],
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
 });

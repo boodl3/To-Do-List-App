@@ -54,10 +54,12 @@ function Workspace() {
     <>
       <Toolbar
         start={
+          <IconButton label="New section" onClick={addSection}>
+            <Plus size={18} aria-hidden />
+          </IconButton>
+        }
+        overflow={
           <>
-            <IconButton label="New section" onClick={addSection}>
-              <Plus size={18} aria-hidden />
-            </IconButton>
             <IconButton
               label="Tidy up"
               disabled={empty}
@@ -67,12 +69,12 @@ function Workspace() {
             >
               <LayoutGrid size={18} aria-hidden />
             </IconButton>
+            <ThemeToggle />
+            <PinButton />
           </>
         }
         end={
           <>
-            <ThemeToggle />
-            <PinButton />
             <IconButton
               label="Timer"
               pressed={timerVisible}

@@ -105,6 +105,7 @@ test.describe('US1 — capture tasks in a section', () => {
     await newSection(page, 'S');
     await addTasks(page, 'P', 'x');
     await task(page, 'x').press('Tab');
+    await task(page, 'P').hover(); // row controls appear on hover/focus
     await page.getByRole('button', { name: 'Delete P' }).click();
     await expect(task(page, 'P')).toBeHidden();
     await page.locator('body').click({ position: { x: 5, y: 700 } });
@@ -136,4 +137,12 @@ test.describe('US1 — capture tasks in a section', () => {
     expect(text!.x + text!.width).toBeLessThanOrEqual(box!.x + box!.width);
     expect(text!.height).toBeGreaterThan(40);
   });
+});
+
+test('an unreadable save file is set aside and the user is told (T121)', async ({ page }) => {
+  await openApp(page, { fixture: 'corrupt' });
+  await expect(page.getByRole('status')).toContainText("couldn't be read");
+  await expect(page.getByText('Your board is empty')).toBeVisible();
+  const kept = await page.evaluate(() => localStorage.getItem('focusboard.corrupt-0.json'));
+  expect(kept).toContain('"schemaVersion": 1');
 });

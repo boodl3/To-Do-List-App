@@ -110,6 +110,7 @@ describe('TaskList', () => {
       }),
     ]);
     const row = screen.getByRole('textbox', { name: 'Task A' }).closest('li')!;
+    await userEvent.hover(screen.getByRole('textbox', { name: 'Task A' })); // controls appear on hover
     await userEvent.click(within(row).getAllByRole('button', { name: 'Delete A' })[0]!);
     expect(tasksOf(store)).toHaveLength(0);
   });

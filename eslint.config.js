@@ -20,6 +20,7 @@ export default tseslint.config(
       'playwright-report/',
       'test-results/',
       '*.config.*',
+      'scripts/',
       'eslint.config.js',
     ],
   },

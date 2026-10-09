@@ -33,6 +33,9 @@ export function TaskRow({
   const { setNodeRef, style, isDragging, handleProps } = useSortableRow(item.id);
   const textRef = useFocusRequest<HTMLTextAreaElement>(item.id);
   const [draft, setDraft] = useState<string | null>(null);
+  // Row controls (grip, focus, delete) exist only while the row is hovered/focused: on a large
+  // board they were most of the DOM (T117). Focusing into the row creates them before Tab moves on.
+  const [active, setActive] = useState(false);
   const kind = parentId ? 'Subtask' : 'Task';
   const name = item.text || '(untitled)';
   const value = draft ?? item.text;
@@ -82,18 +85,32 @@ export function TaskRow({
       data-dragging={isDragging || undefined}
     >
       <div
+        onMouseEnter={() => {
+          setActive(true);
+        }}
+        onMouseLeave={(e) => {
+          if (!e.currentTarget.contains(document.activeElement)) setActive(false);
+        }}
+        onFocus={() => {
+          setActive(true);
+        }}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) setActive(false);
+        }}
         className={styles.row}
         data-subtask={parentId ? '' : undefined}
         data-done={item.done || undefined}
       >
-        <button
-          type="button"
-          className={`${styles.handle} nodrag`}
-          aria-label={`Reorder ${name}`}
-          {...handleProps}
-        >
-          <GripVertical size={14} aria-hidden />
-        </button>
+        {(active || isDragging) && (
+          <button
+            type="button"
+            className={`${styles.handle} nodrag`}
+            aria-label={`Reorder ${name}`}
+            {...handleProps}
+          >
+            <GripVertical size={14} aria-hidden />
+          </button>
+        )}
         <input
           type="checkbox"
           className={`${styles.check} nodrag`}
@@ -129,29 +146,31 @@ export function TaskRow({
             }}
           />
         )}
-        <div className={styles.actions}>
-          <button
-            type="button"
-            className={`${styles.delete} nodrag`}
-            aria-label={`Focus on ${name}`}
-            title="Focus on this with the timer"
-            onClick={() => {
-              actions.focusOn(item.id);
-            }}
-          >
-            <Timer size={14} aria-hidden />
-          </button>
-          <button
-            type="button"
-            className={`${styles.delete} nodrag`}
-            aria-label={`Delete ${name}`}
-            onClick={() => {
-              actions.deleteItem(sectionId, item.id);
-            }}
-          >
-            <X size={14} aria-hidden />
-          </button>
-        </div>
+        {active && (
+          <div className={styles.actions}>
+            <button
+              type="button"
+              className={`${styles.delete} nodrag`}
+              aria-label={`Focus on ${name}`}
+              title="Focus on this with the timer"
+              onClick={() => {
+                actions.focusOn(item.id);
+              }}
+            >
+              <Timer size={14} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className={`${styles.delete} nodrag`}
+              aria-label={`Delete ${name}`}
+              onClick={() => {
+                actions.deleteItem(sectionId, item.id);
+              }}
+            >
+              <X size={14} aria-hidden />
+            </button>
+          </div>
+        )}
       </div>
       {children}
     </li>
