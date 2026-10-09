@@ -1,7 +1,12 @@
+import { ReactFlowProvider } from '@xyflow/react';
+import { Plus } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { startFresh } from '../../state/boot';
 import { useApp, useAppStore } from '../../state/selectors';
-import { Toolbar } from '../toolbar/Toolbar';
+import { BoardCanvas } from '../board/BoardCanvas';
+import { EmptyBoard } from '../board/EmptyBoard';
+import { useAddSection } from '../board/useAddSection';
+import { IconButton, Toolbar } from '../toolbar/Toolbar';
 import { useResolvedTheme } from '../theme/useResolvedTheme';
 import { Notice } from './Notice';
 import { usePlatform } from './PlatformProvider';
@@ -33,6 +38,27 @@ function LoadErrorDialog({ error }: { error: string }) {
   );
 }
 
+function Workspace() {
+  const addSection = useAddSection();
+  const empty = useApp((s) => s.doc.board.sections.length === 0);
+  return (
+    <>
+      <Toolbar
+        start={
+          <IconButton label="New section" onClick={addSection}>
+            <Plus size={18} aria-hidden />
+          </IconButton>
+        }
+      />
+      <main className={styles.board} aria-label="Board">
+        <BoardCanvas />
+        {empty && <EmptyBoard onAdd={addSection} />}
+      </main>
+      <Notice />
+    </>
+  );
+}
+
 export function App() {
   const status = useApp((s) => s.status);
   const error = useApp((s) => s.error);
@@ -46,10 +72,8 @@ export function App() {
   if (status === 'loading') return null;
   if (status === 'error') return <LoadErrorDialog error={error ?? 'Unknown error'} />;
   return (
-    <>
-      <Toolbar />
-      <main className={styles.board} aria-label="Board" />
-      <Notice />
-    </>
+    <ReactFlowProvider>
+      <Workspace />
+    </ReactFlowProvider>
   );
 }

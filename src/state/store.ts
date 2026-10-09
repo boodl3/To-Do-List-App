@@ -9,6 +9,8 @@ export interface AppState {
   status: 'loading' | 'ready' | 'error';
   error: string | null;
   notice: string | null;
+  /** Transient UI: id of the field that should take focus next (new task, new section, …). */
+  focusRequest: string | null;
   history: H.History;
   hydrate: (doc: AppDocument) => void;
   fail: (error: string) => void;
@@ -22,6 +24,7 @@ export interface AppState {
   updatePomodoro: (update: (p: PomodoroState) => PomodoroState) => void;
   updatePrefs: (update: (p: Preferences) => Preferences) => void;
   setNotice: (notice: string | null) => void;
+  requestFocus: (id: string | null) => void;
 }
 
 export type AppStore = ReturnType<typeof createAppStore>;
@@ -32,6 +35,7 @@ export function createAppStore(platform: Pick<Platform, 'clock'>) {
     status: 'loading',
     error: null,
     notice: null,
+    focusRequest: null,
     history: H.emptyHistory,
 
     hydrate: (doc) => {
@@ -75,6 +79,9 @@ export function createAppStore(platform: Pick<Platform, 'clock'>) {
     },
     setNotice(notice) {
       set({ notice });
+    },
+    requestFocus(focusRequest) {
+      set({ focusRequest });
     },
   }));
 }

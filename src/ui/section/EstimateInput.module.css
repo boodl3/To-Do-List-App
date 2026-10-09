@@ -1,0 +1,40 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.input {
+  width: var(--estimate-width);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  text-align: right;
+}
+
+.input:hover,
+.input:focus {
+  border-color: var(--control-border);
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+.input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.error {
+  position: absolute;
+  inset: calc(100% + var(--space-1)) 0 auto auto;
+  z-index: 1;
+  width: max-content;
+  max-width: calc(var(--estimate-width) * 3);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-row);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-card);
+  color: var(--danger);
+  font-size: var(--text-xs);
+}

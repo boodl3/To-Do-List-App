@@ -1,0 +1,27 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.bar {
+  display: flex;
+  flex: 1;
+  gap: var(--space-1);
+  min-height: var(--space-2);
+}
+
+.segment {
+  flex: 1;
+  border-radius: var(--radius-pill);
+  background: var(--hairline);
+}
+
+.segment[data-filled] {
+  background: var(--accent);
+}
+
+.count {
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}

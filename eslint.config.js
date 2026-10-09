@@ -33,6 +33,8 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       '@typescript-eslint/no-explicit-any': 'error',
+      // noUncheckedIndexedAccess is on; `list[i]!` after a successful lookup states that check.
+      '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
       'no-restricted-imports': ['error', { patterns: [tauri, uiLibs] }],
@@ -61,8 +63,4 @@ export default tseslint.config(
     rules: { 'no-restricted-imports': ['error', { patterns: [uiLibs] }] },
   },
   { files: ['src/ui/**'], rules: { 'no-restricted-imports': ['error', { patterns: [tauri] }] } },
-  {
-    files: ['**/*.test.ts', '**/*.test.tsx', 'tests/**'],
-    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
-  },
 );
