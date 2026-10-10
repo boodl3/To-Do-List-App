@@ -159,6 +159,33 @@ describe('PomodoroWidget', () => {
     expect(widget()).toHaveTextContent('Focusing on Problem set');
   });
 
+  it('runs for the linked task estimate; "Complete task" ticks it and starts the break', async () => {
+    const d = doc();
+    const taskId = '5e4e00e2-8b3e-4032-95ee-50b5d3882ed4';
+    d.board.sections.push({
+      id: '40016d9b-c8cf-4068-b880-b0f78bf4bac1',
+      title: 'S',
+      accent: 'orange',
+      x: 0,
+      y: 0,
+      width: 320,
+      height: 240,
+      createdAt: 0,
+      tasks: [{ id: taskId, text: 'Essay', done: false, estimateMin: 50, subtasks: [] }],
+    });
+    d.pomodoro.linkedTaskId = taskId;
+    const { store } = renderWithApp(<PomodoroWidget />, { doc: d });
+    expect(widget()).toHaveTextContent('50:00');
+    expect(screen.queryByRole('button', { name: 'Complete task' })).toBeNull(); // idle
+    await userEvent.click(screen.getByRole('button', { name: 'Start' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Complete task' }));
+    const s = store.getState().doc;
+    expect(s.board.sections[0]!.tasks[0]!.done).toBe(true);
+    expect(s.pomodoro).toMatchObject({ mode: 'shortBreak', linkedTaskId: null });
+    expect(s.pomodoro.status.kind).toBe('running');
+    expect(s.pomodoro.completedToday.count).toBe(1);
+  });
+
   it('renders nothing while hidden', () => {
     renderWithApp(<PomodoroWidget />, {
       doc: doc({ widget: { x: 0, y: 0, width: 248, height: 216, visible: false } }),

@@ -88,6 +88,14 @@ describe('pomodoro state machine', () => {
     expect(P.remainingMs(P.reset(changed), T0)).toBe(50 * MIN);
   });
 
+  it('a focus session on a task with an estimate lasts that estimate; breaks do not', () => {
+    const p = fresh();
+    expect(P.remainingMs(p, T0, 90)).toBe(90 * MIN);
+    expect(P.start(p, T0, SID, 90).status).toEqual({ kind: 'running', endsAt: T0 + 90 * MIN });
+    expect(P.durationOf('shortBreak', p.settings, 90)).toBe(5 * MIN);
+    expect(P.durationOf('focus', p.settings, null)).toBe(25 * MIN);
+  });
+
   it('ignores actions that do not apply to the current status', () => {
     const idle = fresh();
     expect(P.pause(idle, T0)).toBe(idle);

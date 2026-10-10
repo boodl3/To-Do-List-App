@@ -8,29 +8,40 @@ import type { PomodoroMode, PomodoroSettings, PomodoroState } from './schema';
  */
 const MIN = 60_000;
 
-export function durationOf(mode: PomodoroMode, s: PomodoroSettings): number {
+/** `estimateMin`: a focus session on a task with an estimate lasts that estimate. */
+export function durationOf(
+  mode: PomodoroMode,
+  s: PomodoroSettings,
+  estimateMin: number | null = null,
+): number {
+  if (mode === 'focus' && estimateMin) return estimateMin * MIN;
   const minutes =
     mode === 'focus' ? s.focusMin : mode === 'shortBreak' ? s.shortBreakMin : s.longBreakMin;
   return minutes * MIN;
 }
 
-export function remainingMs(p: PomodoroState, now: number): number {
+export function remainingMs(p: PomodoroState, now: number, estimateMin: number | null = null) {
   switch (p.status.kind) {
     case 'running':
       return Math.max(0, p.status.endsAt - now);
     case 'paused':
       return p.status.remainingMs;
     case 'idle':
-      return durationOf(p.mode, p.settings);
+      return durationOf(p.mode, p.settings, estimateMin);
   }
 }
 
-export function start(p: PomodoroState, now: number, sessionId: string): PomodoroState {
+export function start(
+  p: PomodoroState,
+  now: number,
+  sessionId: string,
+  estimateMin: number | null = null,
+): PomodoroState {
   if (p.status.kind !== 'idle') return p;
   return {
     ...p,
     sessionId,
-    status: { kind: 'running', endsAt: now + durationOf(p.mode, p.settings) },
+    status: { kind: 'running', endsAt: now + durationOf(p.mode, p.settings, estimateMin) },
   };
 }
 

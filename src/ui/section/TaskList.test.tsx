@@ -125,6 +125,20 @@ describe('TaskList', () => {
     expect(tasksOf(store)).toHaveLength(0);
   });
 
+  it('"Add subtask" appends an empty subtask and focuses it; subtasks have no such button', async () => {
+    const { store } = setup([
+      task('A', {
+        subtasks: [{ id: crypto.randomUUID(), text: 'x', done: false, estimateMin: null }],
+      }),
+    ]);
+    await userEvent.hover(screen.getByRole('textbox', { name: 'Task A' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add subtask to A' }));
+    expect(tasksOf(store)[0]!.subtasks.map((s) => s.text)).toEqual(['x', '']);
+    expect(screen.getByRole('textbox', { name: 'Subtask (untitled)' })).toHaveFocus();
+    await userEvent.hover(screen.getByRole('textbox', { name: 'Subtask x' }));
+    expect(screen.queryByRole('button', { name: 'Add subtask to x' })).toBeNull();
+  });
+
   it('shows the subtask sum as a read-only estimate on the parent', () => {
     setup([
       task('P', {

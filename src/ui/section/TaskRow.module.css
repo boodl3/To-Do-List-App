@@ -25,7 +25,8 @@
   padding-left: calc(var(--space-4) + var(--space-5));
 }
 
-/* Drag handle sits in the left gutter; actions sit under the estimate on hover/focus. */
+/* Drag handle sits in the left gutter; actions sit in the bottom-right corner on hover/focus,
+   over the reserved second row, so the estimate column stays as narrow as its value. */
 .handle {
   position: absolute;
   top: var(--space-1);
@@ -38,10 +39,13 @@
 
 .actions {
   display: flex;
-  grid-area: 2 / 3;
-  justify-self: end;
+  position: absolute;
+  right: 0;
+  bottom: var(--space-1);
   gap: var(--space-1);
-  padding-right: var(--space-2);
+  padding: 0 var(--space-2) 0 var(--space-1);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
 }
 
 .row:hover,
@@ -114,7 +118,7 @@
 }
 
 .rollup {
-  width: var(--estimate-width);
+  min-width: var(--space-5);
   padding: var(--space-1) var(--space-2);
   color: var(--text-muted);
   font-size: var(--text-sm);

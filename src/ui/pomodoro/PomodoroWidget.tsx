@@ -1,4 +1,4 @@
-import { GripVertical, Pause, Play, RotateCcw, SkipForward, X } from 'lucide-react';
+import { CircleCheck, GripVertical, Pause, Play, RotateCcw, SkipForward, X } from 'lucide-react';
 import {
   useEffect,
   useLayoutEffect,
@@ -9,7 +9,9 @@ import {
 } from 'react';
 import { BOARD_GAP, GRID } from '../../domain/defaults';
 import { durationOf, MODE_LABEL, remainingMs } from '../../domain/pomodoro';
+import { itemEstimate } from '../../domain/rollup';
 import { WIDGET_HEIGHT, WIDGET_WIDTH, type PomodoroState } from '../../domain/schema';
+import { findItem } from '../../domain/tasks';
 import { useApp, usePomodoro } from '../../state/selectors';
 import { usePlatform } from '../app/PlatformProvider';
 import { useActions } from '../app/useActions';
@@ -43,18 +45,19 @@ function useNow(running: boolean): number {
   return running ? now : clock.now();
 }
 
-function useLinkedTaskName(p: PomodoroState): string | null {
-  return useApp((s) => {
-    if (!p.linkedTaskId) return null;
-    for (const section of s.doc.board.sections) {
-      for (const t of section.tasks) {
-        if (t.id === p.linkedTaskId) return t.text || 'Untitled task';
-        const sub = t.subtasks.find((x) => x.id === p.linkedTaskId);
-        if (sub) return sub.text || 'Untitled task';
-      }
-    }
-    return null;
+/** The linked task's name and estimate (the focus length), as two primitive selections. */
+function useLinkedTask(p: PomodoroState) {
+  const find = (board: Parameters<typeof findItem>[0]) =>
+    p.linkedTaskId ? findItem(board, p.linkedTaskId)?.item : undefined;
+  const name = useApp((s) => {
+    const item = find(s.doc.board);
+    return item ? item.text || 'Untitled task' : null;
   });
+  const estimate = useApp((s) => {
+    const item = find(s.doc.board);
+    return item ? itemEstimate(item) : null;
+  });
+  return { name, estimate };
 }
 
 /** Keep the widget inside the window (FR-019). The rendered size wins: content can stretch it. */
@@ -141,7 +144,7 @@ export function PomodoroWidget() {
   const [live, setLive] = useState<{ x: number; y: number } | null>(null);
   const [liveSize, setLiveSize] = useState<ReturnType<typeof resizeFrom> | null>(null);
   const now = useNow(p.status.kind === 'running');
-  const linked = useLinkedTaskName(p);
+  const { name: linked, estimate } = useLinkedTask(p);
 
   const { x, y, width, height, visible } = p.widget;
   // Re-clamp after a resize of the widget (it grows downwards too) or of the window.
@@ -160,8 +163,8 @@ export function PomodoroWidget() {
 
   if (!visible) return null;
 
-  const remaining = remainingMs(p, now);
-  const total = durationOf(p.mode, p.settings);
+  const remaining = remainingMs(p, now, estimate);
+  const total = Math.max(remaining, durationOf(p.mode, p.settings, estimate));
   const filled = Math.round(((total - remaining) / total) * SEGMENTS);
   const pos = liveSize ?? live ?? { x, y };
   const size = liveSize ?? { width, height };
@@ -306,6 +309,21 @@ export function PomodoroWidget() {
               }}
             >
               <Play size={16} aria-hidden /> Resume
+            </button>
+          )}
+          {s !== 'idle' && p.mode === 'focus' && (
+            <button
+              type="button"
+              className={styles.icon}
+              aria-label={linked ? 'Complete task' : 'Complete session'}
+              title={
+                linked ? 'Complete task and start the break' : 'Finish early and start the break'
+              }
+              onClick={() => {
+                actions.timerCompleteTask();
+              }}
+            >
+              <CircleCheck size={16} aria-hidden />
             </button>
           )}
           {s !== 'idle' && (

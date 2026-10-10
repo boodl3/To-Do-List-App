@@ -1,4 +1,4 @@
-import type { Section, Subtask, Task } from './schema';
+import type { Board, Section, Subtask, Task } from './schema';
 
 /**
  * Task-list operations on one section (FR-010 – FR-015). Every function returns the same
@@ -44,6 +44,21 @@ function mapItem(section: Section, id: string, fn: <T extends Task | Subtask>(it
   }
   if (next === task) return section;
   return withTasks(section, section.tasks.with(at.ti, next));
+}
+
+/** The task or subtask with `id` anywhere on the board, with its section. */
+export function findItem(
+  board: Board,
+  id: string,
+): { section: Section; item: Task | Subtask } | null {
+  for (const section of board.sections) {
+    for (const t of section.tasks) {
+      if (t.id === id) return { section, item: t };
+      const sub = t.subtasks.find((x) => x.id === id);
+      if (sub) return { section, item: sub };
+    }
+  }
+  return null;
 }
 
 const insertAfter = <T extends { id: string }>(list: T[], item: T, afterId?: string) => {

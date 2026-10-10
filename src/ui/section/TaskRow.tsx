@@ -1,4 +1,4 @@
-import { GripVertical, Timer, X } from 'lucide-react';
+import { GripVertical, ListPlus, Timer, X } from 'lucide-react';
 import { useState, type KeyboardEvent } from 'react';
 import { formatEstimate } from '../../domain/estimate';
 import type { Subtask, Task } from '../../domain/schema';
@@ -138,6 +138,19 @@ export function TaskRow({
         )}
         {active && (
           <div className={styles.actions}>
+            {!parentId && (
+              <button
+                type="button"
+                className={`${styles.delete} nodrag`}
+                aria-label={`Add subtask to ${name}`}
+                title="Add a subtask"
+                onClick={() => {
+                  actions.addSubtask(sectionId, item.id);
+                }}
+              >
+                <ListPlus size={14} aria-hidden />
+              </button>
+            )}
             <button
               type="button"
               className={`${styles.delete} nodrag`}

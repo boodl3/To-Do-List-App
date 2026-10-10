@@ -1,4 +1,4 @@
-import type { Section, Task } from './schema';
+import type { Section, Subtask, Task } from './schema';
 
 /** Derived values (data-model "Derived values") — never stored. */
 const sum = (ns: number[]) => ns.reduce((a, b) => a + b, 0);
@@ -7,6 +7,11 @@ export function taskEstimate(t: Task): number {
   return t.subtasks.length > 0
     ? sum(t.subtasks.map((s) => s.estimateMin ?? 0))
     : (t.estimateMin ?? 0);
+}
+
+/** A task's or subtask's own estimate (a parent's is its subtasks' sum); null when there is none. */
+export function itemEstimate(item: Task | Subtask): number | null {
+  return ('subtasks' in item ? taskEstimate(item) : item.estimateMin) || null;
 }
 
 export function remainingEstimate(t: Task): number {

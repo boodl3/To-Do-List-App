@@ -165,6 +165,24 @@ test.describe('US3 — focus with a movable Pomodoro timer', () => {
     await expect(widget(page)).toContainText('Focusing on Problem set');
   });
 
+  test('focusing on a task with an estimate sets the timer to it; Complete task starts the break', async ({
+    page,
+  }) => {
+    await newSection(page, 'S');
+    await page.getByRole('textbox', { name: 'Add a task' }).fill('Essay');
+    await page.getByRole('textbox', { name: 'Add a task' }).press('Enter');
+    await page.getByRole('textbox', { name: 'Estimate for Essay' }).fill('50m');
+    await page.getByRole('textbox', { name: 'Estimate for Essay' }).press('Enter');
+    await page.getByRole('textbox', { name: 'Task Essay' }).hover();
+    await page.getByRole('button', { name: 'Focus on Essay' }).click();
+    await expect(widget(page).getByRole('timer')).toHaveText('50:00');
+    await button(page, 'Start').click();
+    await button(page, 'Complete task').click();
+    await expect(page.getByRole('checkbox', { name: 'Done: Essay' })).toBeChecked();
+    await expect(widget(page)).toContainText('Short break');
+    await expect(button(page, 'Pause')).toBeVisible();
+  });
+
   test('a session that ended while the app was closed shows as completed on launch', async ({
     page,
   }) => {

@@ -8,6 +8,7 @@ import { createSection, renameSection, updateSection } from '../domain/sections'
 import type { Accent, Connection, Section, Viewport } from '../domain/schema';
 import * as C from '../domain/connections';
 import * as P from '../domain/pomodoro';
+import { itemEstimate } from '../domain/rollup';
 import type { PomodoroSettings, PomodoroState } from '../domain/schema';
 import * as T from '../domain/tasks';
 import type { Platform } from '../platform/ports';
@@ -52,14 +53,20 @@ export function createActions(
   const announce = (message: { title: string; body: string }) => {
     state().setNotice(`${message.title} ${message.body}`);
   };
+  const linked = () => {
+    const id = pomodoro().linkedTaskId;
+    return id ? T.findItem(state().doc.board, id) : null;
+  };
+  /** Focus sessions on a task last its estimate (null: the focus setting). */
+  const linkedEstimate = () => {
+    const found = linked();
+    return found ? itemEstimate(found.item) : null;
+  };
   /** A deleted task can't stay linked to the timer (data-model PomodoroState.linkedTaskId). */
   const unlinkIfGone = () => {
-    const id = pomodoro().linkedTaskId;
-    if (!id) return;
-    const exists = state().doc.board.sections.some((s) =>
-      s.tasks.some((t) => t.id === id || t.subtasks.some((x) => x.id === id)),
-    );
-    if (!exists) state().updatePomodoro((p) => ({ ...p, linkedTaskId: null }));
+    if (pomodoro().linkedTaskId && !linked()) {
+      state().updatePomodoro((p) => ({ ...p, linkedTaskId: null }));
+    }
   };
   const inSection = (sectionId: string, fn: (s: Section) => Section) => {
     state().updateBoard((b) => updateSection(b, sectionId, fn));
@@ -163,7 +170,8 @@ export function createActions(
       if (afterId) state().requestFocus(id);
       return id;
     },
-    addSubtask(sectionId: string, parentId: string, afterId: string): string {
+    /** Inserts after `afterId`, or appends to the parent's subtasks. */
+    addSubtask(sectionId: string, parentId: string, afterId?: string): string {
       const id = newId();
       inSection(sectionId, (s) => T.addSubtask(s, parentId, id, '', afterId));
       state().requestFocus(id);
@@ -204,7 +212,7 @@ export function createActions(
 
     // Pomodoro (US3). Timer state is never part of undo history.
     timerStart() {
-      state().updatePomodoro((p) => P.start(p, now(), newId()));
+      state().updatePomodoro((p) => P.start(p, now(), newId(), linkedEstimate()));
       scheduleCompletion();
     },
     timerPause() {
@@ -222,6 +230,19 @@ export function createActions(
     timerSkip() {
       cancelCompletion();
       state().updatePomodoro(P.skip);
+    },
+    /** Finish the focus session early: tick the linked task done and start the break. */
+    timerCompleteTask() {
+      const p = pomodoro();
+      if (p.mode !== 'focus' || p.status.kind === 'idle') return;
+      cancelCompletion();
+      const found = linked();
+      if (found && !found.item.done) api.toggleDone(found.section.id, found.item.id);
+      state().updatePomodoro((q) => ({
+        ...P.start(P.complete(q, now()), now(), newId()),
+        linkedTaskId: null,
+      }));
+      scheduleCompletion();
     },
     /** The scheduled completion fired; stale sessions are ignored. */
     timerCompleted(sessionId: string) {
@@ -254,11 +275,20 @@ export function createActions(
       state().updatePrefs((p) => ({ ...p, pinned: applied }));
       if (applied !== pinned) state().setNotice("Couldn't keep the window on top.");
     },
+    /**
+     * Link the timer to a task. A task with an estimate also sets the timer up for it: an idle
+     * focus session of that length, unless that task's session is already under way.
+     */
     focusOn(taskId: string) {
-      state().updatePomodoro((p) => ({
-        ...p,
+      const p = pomodoro();
+      const found = T.findItem(state().doc.board, taskId);
+      const estimate = found && itemEstimate(found.item);
+      const underway = p.linkedTaskId === taskId && p.status.kind !== 'idle';
+      if (estimate && !underway) cancelCompletion();
+      state().updatePomodoro((q) => ({
+        ...(estimate && !underway ? { ...P.reset(q), mode: 'focus' as const } : q),
         linkedTaskId: taskId,
-        widget: { ...p.widget, visible: true },
+        widget: { ...q.widget, visible: true },
       }));
     },
   };
