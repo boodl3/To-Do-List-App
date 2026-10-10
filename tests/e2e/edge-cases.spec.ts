@@ -12,7 +12,10 @@ test.describe('edge cases', () => {
     await page.getByRole('button', { name: 'More' }).click();
     const more = page.getByRole('dialog', { name: 'More' });
     await expect(more.getByRole('button', { name: 'Tidy up' })).toBeVisible();
-    await more.getByRole('button', { name: 'Dark mode' }).click();
+    // The theme switch never collapses: it stays the rightmost toolbar control.
+    await expect(more.getByRole('button', { name: 'Dark mode' })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'Dark mode' }).click();
     expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark');
   });
 

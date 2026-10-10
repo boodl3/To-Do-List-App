@@ -73,7 +73,6 @@ function Workspace() {
             >
               <LayoutGrid size={18} aria-hidden />
             </IconButton>
-            <ThemeToggle />
             <PinButton />
           </>
         }
@@ -88,6 +87,8 @@ function Workspace() {
             >
               <Timer size={18} aria-hidden />
             </IconButton>
+            {/* Always visible and rightmost, even on narrow windows. */}
+            <ThemeToggle />
           </>
         }
       />

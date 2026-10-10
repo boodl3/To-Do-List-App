@@ -1,8 +1,9 @@
 import { MoreHorizontal, Trash2 } from 'lucide-react';
-import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { useId } from 'react';
 import { ACCENTS } from '../../domain/defaults';
 import type { Section } from '../../domain/schema';
 import { useActions } from '../app/useActions';
+import { useAnchoredPopover } from '../app/useAnchoredPopover';
 import { ConnectMenu } from './ConnectMenu';
 import styles from './SectionMenu.module.css';
 
@@ -12,29 +13,8 @@ const label = (s: string) => s[0]!.toUpperCase() + s.slice(1);
 export function SectionMenu({ section }: { section: Section }) {
   const actions = useActions();
   const id = useId();
-  const button = useRef<HTMLButtonElement>(null);
-  const popover = useRef<HTMLDivElement>(null);
-
   // Contents render only while open: closed menus on a big board were thousands of nodes (T117).
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    const el = popover.current;
-    if (!el) return;
-    const onToggle = (e: Event) => {
-      setOpen((e as ToggleEvent).newState === 'open');
-    };
-    el.addEventListener('toggle', onToggle);
-    return () => {
-      el.removeEventListener('toggle', onToggle);
-    };
-  }, []);
-  useLayoutEffect(() => {
-    const el = popover.current;
-    if (!open || !el || !button.current) return;
-    const r = button.current.getBoundingClientRect();
-    el.style.top = `${r.bottom + 4}px`;
-    el.style.left = `${Math.max(8, r.right - el.offsetWidth)}px`;
-  }, [open]);
+  const { button, popover, open } = useAnchoredPopover();
 
   return (
     <>

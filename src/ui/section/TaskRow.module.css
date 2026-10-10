@@ -12,7 +12,10 @@
   display: grid;
   position: relative;
   grid-template-columns: auto 1fr auto;
-  gap: var(--space-2);
+
+  /* Second row reserves the actions slot under the estimate, so hovering never shifts rows. */
+  grid-template-rows: auto var(--space-4);
+  gap: var(--space-1) var(--space-2);
   align-items: start;
   padding: var(--space-1) 0 var(--space-1) var(--space-4);
   border-radius: var(--radius-row);
@@ -22,7 +25,7 @@
   padding-left: calc(var(--space-4) + var(--space-5));
 }
 
-/* Drag handle sits in the left gutter; actions overlay the right edge on hover/focus. */
+/* Drag handle sits in the left gutter; actions sit under the estimate on hover/focus. */
 .handle {
   position: absolute;
   top: var(--space-1);
@@ -34,19 +37,11 @@
 }
 
 .actions {
-  position: absolute;
-  top: var(--space-1);
-  right: var(--space-1);
   display: flex;
+  grid-area: 2 / 3;
+  justify-self: end;
   gap: var(--space-1);
-  border-radius: var(--radius-control);
-  background: var(--surface-raised);
-  opacity: 0;
-}
-
-.row:hover .actions,
-.row:focus-within .actions {
-  opacity: 1;
+  padding-right: var(--space-2);
 }
 
 .row:hover,
@@ -88,6 +83,7 @@
 }
 
 .text {
+  grid-row: span 2;
   width: 100%;
   min-width: 0;
   padding: var(--space-1) 0;

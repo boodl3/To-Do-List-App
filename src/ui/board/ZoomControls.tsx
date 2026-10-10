@@ -2,16 +2,18 @@ import { Panel, useReactFlow, useViewport } from '@xyflow/react';
 import { Maximize, Minus, Plus } from 'lucide-react';
 import { IconButton } from '../toolbar/Toolbar';
 import styles from './ZoomControls.module.css';
+import { zoomStep } from './zoomStep';
 
 export function ZoomControls() {
-  const { zoomIn, zoomOut, fitView } = useReactFlow();
+  const { zoomTo, fitView } = useReactFlow();
   const { zoom } = useViewport();
+  // Buttons step 10 points; React Flow clamps to minZoom/maxZoom. Ctrl+scroll stays smooth.
   return (
     <Panel position="bottom-right" className={styles.panel} aria-label="Zoom">
       <IconButton
         label="Zoom out"
         onClick={() => {
-          void zoomOut();
+          void zoomTo(zoomStep(zoom, -1));
         }}
       >
         <Minus size={16} aria-hidden />
@@ -22,7 +24,7 @@ export function ZoomControls() {
       <IconButton
         label="Zoom in"
         onClick={() => {
-          void zoomIn();
+          void zoomTo(zoomStep(zoom, 1));
         }}
       >
         <Plus size={16} aria-hidden />

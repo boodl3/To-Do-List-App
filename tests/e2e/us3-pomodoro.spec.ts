@@ -70,7 +70,15 @@ test.describe('US3 — focus with a movable Pomodoro timer', () => {
   test('changed durations apply from the next session', async ({ page }) => {
     await showTimer(page);
     await button(page, 'Start').click();
-    await widget(page).getByRole('button', { name: 'Timer settings' }).click();
+    const gear = widget(page).getByRole('button', { name: 'Timer settings' });
+    await gear.click();
+    // Anchored right under its gear, not the window's top-left corner.
+    const g = (await gear.boundingBox())!;
+    const menu = (await page.getByRole('dialog', { name: 'Timer settings' }).boundingBox())!;
+    expect(menu.y).toBeGreaterThanOrEqual(g.y + g.height);
+    expect(menu.y).toBeLessThan(g.y + g.height + 16);
+    expect(menu.x).toBeLessThanOrEqual(g.x);
+    expect(menu.x + menu.width).toBeGreaterThanOrEqual(g.x + g.width);
     await page.getByRole('spinbutton', { name: 'Focus (minutes)' }).fill('2');
     await page.keyboard.press('Escape');
     await expect(time(page)).toHaveText('25:00');

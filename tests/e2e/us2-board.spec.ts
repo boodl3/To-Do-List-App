@@ -132,8 +132,9 @@ test.describe('US2 — arrange sections freely', () => {
   test('zoom is remembered across a restart', async ({ page }) => {
     await newSection(page, 'A');
     await page.getByRole('button', { name: 'Zoom in' }).click();
+    await expect(page.getByTestId('zoom-level')).toHaveText('110%'); // 10-point steps
     const { zoom } = (await readDoc(page)).board.viewport;
-    expect(zoom).toBeGreaterThan(1);
+    expect(zoom).toBeCloseTo(1.1);
     await reopenApp(page);
     await expect(page.getByTestId('zoom-level')).toHaveText(`${Math.round(zoom * 100)}%`);
   });
