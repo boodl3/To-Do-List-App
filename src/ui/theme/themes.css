@@ -67,6 +67,32 @@ body {
     color var(--motion-theme) var(--ease-out);
 }
 
+/* Theme switch reveal: the new theme grows as a circle from the toggle (ThemeToggle.tsx). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: theme-reveal var(--motion-reveal) var(--ease-out);
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+  }
+
+  to {
+    clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+  }
+}
+
+/* The reveal already animates the change; don't fade colours underneath it too. */
+:root:active-view-transition body {
+  transition: none;
+}
+
 :focus-visible {
   outline: var(--focus-width) solid var(--focus-ring);
   outline-offset: var(--focus-offset);

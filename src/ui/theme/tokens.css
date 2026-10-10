@@ -58,7 +58,10 @@
   /* Motion */
   --motion-fast: 150ms;
   --motion-theme: 220ms;
+  --motion-toggle: 360ms;
+  --motion-reveal: 560ms;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* Layering */
   --z-board: 0;
@@ -72,6 +75,8 @@
   :root {
     --motion-fast: 0ms;
     --motion-theme: 0ms;
+    --motion-toggle: 0ms;
+    --motion-reveal: 0ms;
   }
 }
 

@@ -1,4 +1,5 @@
 .toggle {
+  position: relative;
   display: inline-flex;
   gap: var(--space-1);
   padding: var(--space-1);
@@ -7,7 +8,25 @@
   background: var(--surface-raised);
 }
 
+/* Sliding pill behind the active option. */
+.toggle::before {
+  position: absolute;
+  inset: var(--space-1) auto auto var(--space-1);
+  width: var(--space-5);
+  height: var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+  content: '';
+  transition: transform var(--motion-toggle) var(--ease-spring);
+}
+
+.toggle[data-active='dark']::before {
+  transform: translateX(calc(var(--space-5) + var(--space-1)));
+}
+
 .option {
+  position: relative;
   display: grid;
   place-items: center;
   width: var(--space-5);
@@ -18,13 +37,22 @@
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
-  transition:
-    background-color var(--motion-fast) var(--ease-out),
-    color var(--motion-fast) var(--ease-out);
+  transition: color var(--motion-fast) var(--ease-out);
 }
 
 .option[aria-pressed='true'] {
-  background: var(--surface-card);
-  box-shadow: var(--shadow-card);
   color: var(--text);
+}
+
+/* The sun spins up and the moon swings in as they become active. */
+.option svg {
+  transition: transform var(--motion-toggle) var(--ease-spring);
+}
+
+.sun[aria-pressed='false'] svg {
+  transform: rotate(-90deg) scale(0.75);
+}
+
+.moon[aria-pressed='false'] svg {
+  transform: rotate(40deg) scale(0.75);
 }
