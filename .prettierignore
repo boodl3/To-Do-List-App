@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+src-tauri/
+pnpm-lock.yaml
+specs/
+.specify/
+.claude/
+tests/fixtures/corrupt.json

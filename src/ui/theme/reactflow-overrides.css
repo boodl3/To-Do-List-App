@@ -1,0 +1,32 @@
+@import '@xyflow/react/dist/style.css';
+
+/* Map React Flow's CSS variables onto our tokens so canvas chrome matches both themes. */
+.react-flow {
+  --xy-background-color: var(--surface-board);
+  --xy-background-pattern-color: var(--hairline);
+  --xy-edge-stroke: var(--text-muted);
+  --xy-edge-stroke-selected: var(--focus-ring);
+  --xy-edge-stroke-width: 2;
+  --xy-connectionline-stroke: var(--focus-ring);
+  --xy-handle-background-color: var(--surface-card);
+  --xy-handle-border-color: var(--control-border);
+  --xy-selection-background-color: color-mix(in srgb, var(--focus-ring) 10%, transparent);
+  --xy-selection-border: var(--hairline-width) solid var(--focus-ring);
+  --xy-resize-background-color: var(--focus-ring);
+  --xy-edge-label-background-color: var(--surface-card);
+  --xy-edge-label-color: var(--text);
+}
+
+.react-flow__node.selectable:focus-visible {
+  outline: none;
+}
+
+.react-flow__node:focus-visible > * {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* Connection labels and their toolbar sit above section cards, which are often only 24 px apart. */
+.react-flow__edgelabel-renderer {
+  z-index: 1000;
+}

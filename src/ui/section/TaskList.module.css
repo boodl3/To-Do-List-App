@@ -1,0 +1,35 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.add {
+  margin-left: calc(var(--space-4) + var(--checkbox-size) + var(--space-2));
+  padding: var(--space-1) 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--text-md);
+  line-height: var(--line-normal);
+  resize: none;
+
+  /* Grow to fit the text at any width (no JS: it went stale when the card was resized). */
+  field-sizing: content;
+}
+
+.add::placeholder {
+  color: var(--text-muted);
+}
+
+.add:focus {
+  outline: none;
+}

@@ -1,0 +1,115 @@
+/* Semantic tokens per theme. Components read only these + tokens.css. */
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --surface-board: #f2f2f0;
+  --surface-card: #fff;
+  --surface-raised: #f7f7f5;
+  --hairline: #e4e4e0;
+  --control-border: #85857f;
+  --text: #17171c;
+  --text-muted: #5e5e66;
+  --focus-ring: #1f5fd6;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 6%), 0 8px 24px rgb(0 0 0 / 8%);
+  --scrim: rgb(0 0 0 / 30%);
+  --danger: #b42318;
+  --accent-orange-text: #a84300;
+  --accent-mint-text: #00704f;
+  --accent-pink-text: #b8155a;
+  --accent-yellow-text: #7a6000;
+  --accent-violet-text: #6f35d6;
+  --accent-sky-text: #0a6886;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --surface-board: #0a0a0c;
+  --surface-card: #141418;
+  --surface-raised: #1e1e24;
+  --hairline: #2a2a32;
+  --control-border: #6e6e7a;
+  --text: #f2f2f5;
+  --text-muted: #a3a3ad;
+  --focus-ring: #5b9dff;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 35%);
+  --scrim: rgb(0 0 0 / 55%);
+  --danger: #ff6b5e;
+  --accent-orange-text: var(--accent-orange);
+  --accent-mint-text: var(--accent-mint);
+  --accent-pink-text: var(--accent-pink);
+  --accent-yellow-text: var(--accent-yellow);
+  --accent-violet-text: var(--accent-violet);
+  --accent-sky-text: var(--accent-sky);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--surface-board);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--line-normal);
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color var(--motion-theme) var(--ease-out),
+    color var(--motion-theme) var(--ease-out);
+}
+
+/* Theme switch reveal: the new theme grows as a circle from the toggle (ThemeToggle.tsx). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: theme-reveal var(--motion-reveal) var(--ease-out);
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+  }
+
+  to {
+    clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+  }
+}
+
+/* The reveal already animates the change; don't fade colours underneath it too. */
+:root:active-view-transition body {
+  transition: none;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

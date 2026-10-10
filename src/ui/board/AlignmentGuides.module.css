@@ -1,0 +1,14 @@
+.guide {
+  position: absolute;
+  z-index: var(--z-toolbar);
+  background: var(--focus-ring);
+  pointer-events: none;
+}
+
+.guide[data-axis='x'] {
+  width: 1px;
+}
+
+.guide[data-axis='y'] {
+  height: 1px;
+}

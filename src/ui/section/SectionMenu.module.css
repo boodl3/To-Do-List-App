@@ -1,0 +1,194 @@
+.trigger {
+  display: grid;
+  place-items: center;
+  width: var(--control-size);
+  height: var(--control-size);
+  margin: calc(var(--space-2) * -1) calc(var(--space-2) * -1) 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.trigger:hover {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+.popover {
+  position: fixed;
+  inset: auto;
+  display: none;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-row);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+  color: var(--text);
+}
+
+.popover:popover-open {
+  display: flex;
+}
+
+.colors {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.swatch {
+  display: grid;
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  cursor: pointer;
+}
+
+.swatch input {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: var(--radius-pill);
+  appearance: none;
+  cursor: pointer;
+}
+
+.swatch input:checked {
+  outline: var(--focus-width) solid var(--text);
+  outline-offset: var(--focus-offset);
+}
+
+.swatch input:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* Custom colour: a dark disc with a plus inside a hue ring; shows the colour once chosen. */
+.custom {
+  display: grid;
+  place-items: center;
+  width: var(--space-4);
+  height: var(--space-4);
+  padding: 0;
+  border: var(--focus-width) solid transparent;
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(hsl(240deg 6% 8%), hsl(240deg 6% 8%)) padding-box,
+    conic-gradient(
+        hsl(0deg 100% 50%),
+        hsl(60deg 100% 50%),
+        hsl(120deg 100% 50%),
+        hsl(180deg 100% 50%),
+        hsl(240deg 100% 50%),
+        hsl(300deg 100% 50%),
+        hsl(360deg 100% 50%)
+      )
+      border-box;
+  color: hsl(0deg 0% 100%);
+  cursor: pointer;
+}
+
+.custom[data-selected] {
+  background:
+    linear-gradient(var(--custom), var(--custom)) padding-box,
+    conic-gradient(
+        hsl(0deg 100% 50%),
+        hsl(60deg 100% 50%),
+        hsl(120deg 100% 50%),
+        hsl(180deg 100% 50%),
+        hsl(240deg 100% 50%),
+        hsl(300deg 100% 50%),
+        hsl(360deg 100% 50%)
+      )
+      border-box;
+  color: var(--custom-on);
+  outline: var(--focus-width) solid var(--text);
+  outline-offset: var(--focus-offset);
+}
+
+.custom:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.danger,
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.danger {
+  color: var(--danger);
+}
+
+.danger:hover,
+.item:hover {
+  background: var(--surface-raised);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.field input {
+  width: calc(var(--space-7) * 2);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.divider {
+  width: 100%;
+  margin: var(--space-1) 0 0;
+  border: 0;
+  border-top: 1px solid var(--hairline);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-height: calc(var(--space-7) * 3);
+  overflow-y: auto;
+}
+
+.item:disabled {
+  color: var(--text-muted);
+  cursor: default;
+}

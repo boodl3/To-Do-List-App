@@ -1,0 +1,126 @@
+.item {
+  list-style: none;
+}
+
+.item[data-dragging] {
+  position: relative;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+.row {
+  display: grid;
+  position: relative;
+  grid-template-columns: auto 1fr auto;
+
+  /* Second row reserves the actions slot under the estimate, so hovering never shifts rows. */
+  grid-template-rows: auto var(--space-4);
+  gap: var(--space-1) var(--space-2);
+  align-items: start;
+  padding: var(--space-1) 0 var(--space-1) var(--space-4);
+  border-radius: var(--radius-row);
+}
+
+.row[data-subtask] {
+  padding-left: calc(var(--space-4) + var(--space-5));
+}
+
+/* Drag handle sits in the left gutter; actions sit in the bottom-right corner on hover/focus,
+   over the reserved second row, so the estimate column stays as narrow as its value. */
+.handle {
+  position: absolute;
+  top: var(--space-1);
+  left: 0;
+}
+
+.row[data-subtask] .handle {
+  left: var(--space-5);
+}
+
+.actions {
+  display: flex;
+  position: absolute;
+  right: 0;
+  bottom: var(--space-1);
+  gap: var(--space-1);
+  padding: 0 var(--space-2) 0 var(--space-1);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
+}
+
+.row:hover,
+.row:focus-within {
+  background: var(--surface-raised);
+}
+
+.handle,
+.delete {
+  display: grid;
+  place-items: center;
+  width: var(--space-4);
+  height: var(--space-4);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: grab;
+  opacity: 0;
+}
+
+.delete {
+  cursor: pointer;
+}
+
+.row:hover .handle,
+.row:focus-within .handle,
+.actions .delete {
+  opacity: 1;
+}
+
+.check {
+  width: var(--checkbox-size);
+  height: var(--checkbox-size);
+  margin: var(--space-1) 0 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.text {
+  grid-row: span 2;
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-1) 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--text-md);
+  line-height: var(--line-normal);
+  resize: none;
+
+  /* Grow to fit the text at any width (no JS: it went stale when the card was resized). */
+  field-sizing: content;
+  overflow-wrap: anywhere;
+}
+
+.text:focus {
+  outline: none;
+}
+
+.text::placeholder {
+  color: var(--text-muted);
+}
+
+.row[data-done] .text {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.rollup {
+  min-width: var(--space-5);
+  padding: var(--space-1) var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  text-align: right;
+}

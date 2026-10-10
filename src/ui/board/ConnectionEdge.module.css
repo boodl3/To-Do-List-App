@@ -1,0 +1,56 @@
+.anchor {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  pointer-events: all;
+}
+
+.label {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--surface-board);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+}
+
+.toolbar button {
+  display: grid;
+  place-items: center;
+  width: var(--space-5);
+  height: var(--space-5);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.toolbar button:hover,
+.toolbar button[aria-pressed='true'] {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+.toolbar input {
+  width: calc(var(--space-7) * 2);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  color: var(--text);
+  font-size: var(--text-sm);
+}

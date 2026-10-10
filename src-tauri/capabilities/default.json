@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Least-privilege capability for the main window (contracts/ipc-commands.md).",
+  "windows": ["main"],
+  "permissions": [
+    "core:event:default",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-is-always-on-top",
+    "notification:default"
+  ]
+}

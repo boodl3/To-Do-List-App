@@ -1,0 +1,34 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Secrets / local env
+.env
+.env.*
+!.env.example
+
+# AI-assistant tooling (Claude Code config and skills, Spec Kit scripts and templates): local
+# only. The constitution stays tracked because the README links to it; specs/ stays too.
+.claude/
+.specify/*
+!.specify/memory/
+.specify/memory/*
+!.specify/memory/constitution.md
+
+# Logs
+*.log
+
+# Node / build output
+node_modules/
+dist/
+dist-ssr/
+*.local
+coverage/
+playwright-report/
+test-results/
