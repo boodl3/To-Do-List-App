@@ -13,8 +13,6 @@ export interface AppState {
   focusRequest: string | null;
   /** Transient UI: section awaiting delete confirmation. */
   confirmDeleteId: string | null;
-  /** Bumped on every timer completion; the UI plays the chime when it changes. */
-  completionSignal: number;
   history: H.History;
   hydrate: (doc: AppDocument) => void;
   fail: (error: string) => void;
@@ -30,7 +28,6 @@ export interface AppState {
   setNotice: (notice: string | null) => void;
   requestFocus: (id: string | null) => void;
   setConfirmDelete: (id: string | null) => void;
-  signalCompletion: () => void;
 }
 
 export type AppStore = ReturnType<typeof createAppStore>;
@@ -43,7 +40,6 @@ export function createAppStore(platform: Pick<Platform, 'clock'>) {
     notice: null,
     focusRequest: null,
     confirmDeleteId: null,
-    completionSignal: 0,
     history: H.emptyHistory,
 
     hydrate: (doc) => {
@@ -93,9 +89,6 @@ export function createAppStore(platform: Pick<Platform, 'clock'>) {
     },
     setConfirmDelete(confirmDeleteId) {
       set({ confirmDeleteId });
-    },
-    signalCompletion() {
-      set((s) => ({ completionSignal: s.completionSignal + 1 }));
     },
   }));
 }

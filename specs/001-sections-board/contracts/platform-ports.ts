@@ -30,7 +30,14 @@ export interface CompletionPayload {
 }
 
 export interface TimerScheduler {
-  schedule(args: { sessionId: string; endsAtMs: number; title: string; body: string }): Promise<void>;
+  schedule(args: {
+    sessionId: string;
+    endsAtMs: number;
+    title: string;
+    body: string;
+    /** Play the system notification sound with the alert. */
+    sound: boolean;
+  }): Promise<void>;
   cancel(sessionId: string): Promise<void>;
   /** Returns an unsubscribe function. */
   onCompleted(handler: (payload: CompletionPayload) => void): Promise<() => void>;

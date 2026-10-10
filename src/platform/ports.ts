@@ -35,6 +35,8 @@ export interface TimerScheduler {
     endsAtMs: number;
     title: string;
     body: string;
+    /** Play the system notification sound with the alert. */
+    sound: boolean;
   }): Promise<void>;
   cancel(sessionId: string): Promise<void>;
   /** Returns an unsubscribe function. */

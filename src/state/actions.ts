@@ -27,12 +27,20 @@ export function createActions(
   const now = () => platform.clock.now();
   const pomodoro = () => state().doc.pomodoro;
 
-  /** Let Rust fire the completion alert even while the webview is throttled (research R6). */
+  /**
+   * Let Rust fire the completion alert, sound included, even while the webview is throttled or
+   * hidden (research R6, R10). Re-scheduling replaces the previous completion.
+   */
   const scheduleCompletion = () => {
     const p = pomodoro();
     if (p.status.kind !== 'running' || !p.sessionId) return;
     platform.timer
-      .schedule({ sessionId: p.sessionId, endsAtMs: p.status.endsAt, ...P.completionMessage(p) })
+      .schedule({
+        sessionId: p.sessionId,
+        endsAtMs: p.status.endsAt,
+        sound: p.settings.sound,
+        ...P.completionMessage(p),
+      })
       .catch((e: unknown) => {
         state().setNotice(`Couldn't schedule the timer alert: ${String(e)}`);
       });
@@ -43,7 +51,6 @@ export function createActions(
   };
   const announce = (message: { title: string; body: string }) => {
     state().setNotice(`${message.title} ${message.body}`);
-    state().signalCompletion();
   };
   /** A deleted task can't stay linked to the timer (data-model PomodoroState.linkedTaskId). */
   const unlinkIfGone = () => {
@@ -225,7 +232,10 @@ export function createActions(
       else scheduleCompletion();
     },
     setTimerSettings(settings: PomodoroSettings) {
+      const soundChanged = pomodoro().settings.sound !== settings.sound;
       state().updatePomodoro((p) => P.updateSettings(p, settings));
+      // Durations apply next session, but the sound toggle applies to the running one too.
+      if (soundChanged) scheduleCompletion();
     },
     setWidget(patch: Partial<{ x: number; y: number; visible: boolean }>) {
       state().updatePomodoro((p) => ({ ...p, widget: { ...p.widget, ...patch } }));

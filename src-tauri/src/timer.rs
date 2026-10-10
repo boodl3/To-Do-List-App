@@ -9,6 +9,13 @@ use tokio::task::JoinHandle;
 /// Never sleep longer than this before re-checking the wall clock (survives system sleep).
 const MAX_SLEEP: Duration = Duration::from_secs(30);
 
+/// Windows' alarm-clock tone (`ms-winsoundevent:Notification.Looping.Alarm`, played once).
+/// macOS has no such named sound, so it keeps the default notification sound.
+#[cfg(windows)]
+const ALARM_SOUND: &str = "Alarm";
+#[cfg(not(windows))]
+const ALARM_SOUND: &str = "Default";
+
 pub type Clock = Arc<dyn Fn() -> u64 + Send + Sync>;
 
 pub fn wall_clock_ms() -> u64 {
@@ -84,12 +91,19 @@ pub async fn schedule_timer_completion(
     ends_at_ms: u64,
     title: String,
     body: String,
+    sound: bool,
 ) -> Result<(), String> {
     scheduler.schedule(session_id, ends_at_ms, move |done| {
         use tauri::Emitter;
         use tauri_plugin_notification::NotificationExt;
+        let mut notification = app.notification().builder().title(title).body(body);
+        // Windows toasts are silent unless a sound is named. Follows the user's system sound and
+        // Do Not Disturb settings.
+        if sound {
+            notification = notification.sound(ALARM_SOUND);
+        }
         // A denied permission only loses the OS notification; the event still drives the UI alert.
-        let _ = app.notification().builder().title(title).body(body).show();
+        let _ = notification.show();
         let _ = app.emit("pomodoro://completed", done);
     });
     Ok(())

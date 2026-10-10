@@ -7,7 +7,6 @@ import { useApp, usePomodoro } from '../../state/selectors';
 import { usePlatform } from '../app/PlatformProvider';
 import { useActions } from '../app/useActions';
 import { PomodoroSettings } from './PomodoroSettings';
-import { useCompletionChime } from './useCompletionChime';
 import styles from './PomodoroWidget.module.css';
 
 /** Fallback size for clamping before layout (keep in sync with --timer-width). */
@@ -72,7 +71,6 @@ export function PomodoroWidget() {
   const [live, setLive] = useState<{ x: number; y: number } | null>(null);
   const now = useNow(p.status.kind === 'running');
   const linked = useLinkedTaskName(p);
-  useCompletionChime();
 
   const { x, y, visible } = p.widget;
   useEffect(() => {

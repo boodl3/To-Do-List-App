@@ -54,13 +54,15 @@ invoke<void>('schedule_timer_completion', {
   endsAtMs: number,          // epoch ms
   title: string,             // e.g. "Focus session complete"
   body: string,              // e.g. "Time for a 5-minute break."
+  sound: boolean,            // settings.sound: play the system notification sound
 }): Promise<void>
 ```
 
 - Cancels any previously scheduled completion (only one timer exists).
 - Spawns an async task that sleeps until `endsAtMs` (re-checking the wall clock on wake to
   survive system sleep), then: sends a native notification via `tauri-plugin-notification`
-  and emits the event below.
+  (with the Windows alarm tone, or the default sound on macOS, when `sound`; Windows toasts are silent unless a
+  sound is named) and emits the event below.
 - If `endsAtMs` is already in the past, fires immediately.
 
 ### `cancel_timer_completion`

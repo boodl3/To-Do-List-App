@@ -199,7 +199,12 @@ poor keyboard/a11y story and inconsistent in WKWebView.
 - **Icons**: `lucide-react` (Sun, Moon, Pin, PinOff, Timer, Plus, Undo2, Redo2, LayoutGrid) —
   ISC license, tree-shakeable.
 - **Notifications**: `tauri-plugin-notification` (sent from Rust in R6).
-- **Sound**: a short bundled `.ogg`/`.mp3` played via `HTMLAudioElement`; toggle in settings.
+- **Sound**: the OS notification sound, requested on the same notification from Rust
+  (`.sound("Alarm")`, the Windows alarm tone played once, when `settings.sound`; `"Default"` on macOS); toggle in settings. *Revised 2026-10-10:* the
+  first build used a Web Audio chime in the webview, which users didn't hear in the native app,
+  and Windows toasts are silent unless a sound is named. Sending the sound from Rust also works
+  while the window is minimized, needs no audio asset, and follows the system's sound and Do Not
+  Disturb settings.
 
 ---
 
