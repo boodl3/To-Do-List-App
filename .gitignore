@@ -13,8 +13,13 @@ desktop.ini
 .env.*
 !.env.example
 
-# Claude Code per-user overrides (shared config in .claude/settings.json stays tracked)
-.claude/settings.local.json
+# AI-assistant tooling (Claude Code config and skills, Spec Kit scripts and templates): local
+# only. The constitution stays tracked because the README links to it; specs/ stays too.
+.claude/
+.specify/*
+!.specify/memory/
+.specify/memory/*
+!.specify/memory/constitution.md
 
 # Logs
 *.log
