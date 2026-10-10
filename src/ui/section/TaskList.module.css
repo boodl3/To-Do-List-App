@@ -21,6 +21,9 @@
   font-size: var(--text-md);
   line-height: var(--line-normal);
   resize: none;
+
+  /* Grow to fit the text at any width (no JS: it went stale when the card was resized). */
+  field-sizing: content;
 }
 
 .add::placeholder {

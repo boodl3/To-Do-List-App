@@ -1,15 +1,23 @@
 import {
   CURRENT_SCHEMA_VERSION,
-  type Accent,
   type AppDocument,
   type PomodoroSettings,
+  type PresetAccent,
 } from './schema';
 
 export const GRID = 8;
 export const BOARD_GAP = 24;
 export const MIN_SECTION = { width: 240, height: 160 } as const;
 export const DEFAULT_SECTION = { width: 320, height: 240 } as const;
-export const ACCENTS: readonly Accent[] = ['orange', 'mint', 'pink', 'yellow', 'violet', 'sky'];
+export const ACCENTS: readonly PresetAccent[] = [
+  'orange',
+  'mint',
+  'pink',
+  'yellow',
+  'violet',
+  'sky',
+];
+export const WIDGET_DEFAULT_SIZE = { width: 248, height: 216 } as const;
 
 export const DEFAULT_SETTINGS: PomodoroSettings = {
   focusMin: 25,
@@ -38,7 +46,7 @@ export function emptyDocument(now: number): AppDocument {
       focusStreak: 0,
       completedToday: { date: localDateKey(now), count: 0 },
       linkedTaskId: null,
-      widget: { x: 24, y: 80, visible: false },
+      widget: { x: 24, y: 80, ...WIDGET_DEFAULT_SIZE, visible: false },
     },
     prefs: { theme: 'system', pinned: false },
   };

@@ -258,8 +258,11 @@ confirm the arrow follows; switch the connection to a plain line, add a label, t
 
 **Sections**
 
-- **FR-007**: Users MUST be able to create, rename, recolor (from a fixed accessible palette),
-  and delete sections; deleting a non-empty section MUST require confirmation.
+- **FR-007**: Users MUST be able to create, rename, recolor (from a fixed accessible palette,
+  or any custom opaque colour picked with a saturation/brightness area, hue slider or hex
+  value), and delete sections; deleting a non-empty section MUST require confirmation. Text
+  drawn in or on a custom colour MUST still meet FR-027 contrast. *(Amended 2026-10-10: custom
+  colours, no alpha.)*
 - **FR-008**: A section MUST be displayed as a rounded rectangle containing a header (title,
   remaining-time total, progress indicator) and a scrollable task list.
 - **FR-009**: Sections MUST be freely resizable from any edge or corner with a minimum size
@@ -284,7 +287,9 @@ confirm the arrow follows; switch the connection to a plain line, add a label, t
 **Connections**
 
 - **FR-016**: Users MUST be able to connect two different sections with a connection that is
-  either an arrow (directed) or a plain line, optionally with a short label (≤ 40 characters).
+  either an arrow (directed) or a plain line, drawn straight or curved (the curve has the shape
+  of the drag-to-connect preview), optionally with a short label (≤ 40 characters). *(Amended
+  2026-10-10: curved.)*
 - **FR-017**: Connections MUST stay attached when sections move or resize, and MUST be removed
   when either connected section is deleted.
 - **FR-018**: The app MUST prevent self-connections and duplicate connections (same two
@@ -292,9 +297,11 @@ confirm the arrow follows; switch the connection to a plain line, add a label, t
 
 **Pomodoro**
 
-- **FR-019**: The app MUST provide a single Pomodoro timer widget that can be shown/hidden and
-  dragged anywhere inside the app window, stays above board content, and is kept within the
-  visible window.
+- **FR-019**: The app MUST provide a single Pomodoro timer widget that can be shown/hidden,
+  dragged anywhere inside the app window and resized from any edge or corner like a section,
+  width and height independently (by pointer or keyboard; text keeps its size and the layout
+  reflows, never smaller than its content), stays above board content, and is kept within the
+  visible window. *(Amended 2026-10-10: resizing.)*
 - **FR-020**: The timer MUST support Focus, Short break, and Long break modes with
   configurable durations (defaults 25 / 5 / 15 minutes) and a configurable long-break interval
   (default every 4 focus sessions).

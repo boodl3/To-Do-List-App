@@ -23,3 +23,36 @@ export function attachPoints(source: Rect, target: Rect): { source: Point; targe
     target: borderPoint(target, centre(source)),
   };
 }
+
+type Side = 'top' | 'right' | 'bottom' | 'left';
+
+const midpoint = (r: Rect, side: Side): Point => ({
+  x: side === 'left' ? r.x : side === 'right' ? r.x + r.width : r.x + r.width / 2,
+  y: side === 'top' ? r.y : side === 'bottom' ? r.y + r.height : r.y + r.height / 2,
+});
+
+/**
+ * Curved edge ends: the midpoints of the sides facing each other, with those sides as bezier
+ * directions, so a curved connection has the shape of the drag-to-connect preview.
+ */
+export function curveEnds(
+  source: Rect,
+  target: Rect,
+): { source: Point & { position: Side }; target: Point & { position: Side } } {
+  const dx = target.x + target.width / 2 - (source.x + source.width / 2);
+  const dy = target.y + target.height / 2 - (source.y + source.height / 2);
+  // Compare against the combined half sizes so wide sections still pick sides sensibly.
+  const horizontal =
+    Math.abs(dx) / (source.width + target.width) >= Math.abs(dy) / (source.height + target.height);
+  const [from, to]: [Side, Side] = horizontal
+    ? dx >= 0
+      ? ['right', 'left']
+      : ['left', 'right']
+    : dy >= 0
+      ? ['bottom', 'top']
+      : ['top', 'bottom'];
+  return {
+    source: { ...midpoint(source, from), position: from },
+    target: { ...midpoint(target, to), position: to },
+  };
+}

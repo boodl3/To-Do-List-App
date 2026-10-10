@@ -8,7 +8,7 @@ import { createSection, renameSection, updateSection } from '../domain/sections'
 import type { Accent, Connection, Section, Viewport } from '../domain/schema';
 import * as C from '../domain/connections';
 import * as P from '../domain/pomodoro';
-import type { PomodoroSettings } from '../domain/schema';
+import type { PomodoroSettings, PomodoroState } from '../domain/schema';
 import * as T from '../domain/tasks';
 import type { Platform } from '../platform/ports';
 import type { AppStore } from './store';
@@ -97,9 +97,14 @@ export function createActions(
     },
 
     /** Drag/resize: one undo step from start to end (research R4 gesture coalescing). */
-    startGesture(sectionId: string) {
+    /**
+     * Coalesces the following edits into one undo step until `endGesture`. With a section id the
+     * section is also brought to front (drag/resize); without, the DOM order is left alone, which
+     * keeps an open popover inside the section from being closed by the reorder.
+     */
+    startGesture(sectionId?: string) {
       state().beginGesture();
-      state().updateBoard((b) => S.bringToFront(b, sectionId));
+      if (sectionId) state().updateBoard((b) => S.bringToFront(b, sectionId));
     },
     endGesture() {
       state().endGesture();
@@ -134,6 +139,9 @@ export function createActions(
     },
     restyleConnection(id: string, style: Connection['style']) {
       state().updateBoard((b) => C.restyle(b, id, style));
+    },
+    reshapeConnection(id: string, shape: Connection['shape']) {
+      state().updateBoard((b) => C.reshape(b, id, shape));
     },
     reverseConnection(id: string) {
       state().updateBoard((b) => C.reverse(b, id));
@@ -237,7 +245,7 @@ export function createActions(
       // Durations apply next session, but the sound toggle applies to the running one too.
       if (soundChanged) scheduleCompletion();
     },
-    setWidget(patch: Partial<{ x: number; y: number; visible: boolean }>) {
+    setWidget(patch: Partial<PomodoroState['widget']>) {
       state().updatePomodoro((p) => ({ ...p, widget: { ...p.widget, ...patch } }));
     },
     /** Always-on-top (FR-025): store only what the OS actually applied. */

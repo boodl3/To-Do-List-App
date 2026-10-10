@@ -28,7 +28,6 @@
   --toolbar-height: 56px;
   --estimate-width: 72px;
   --handle-size: 12px;
-  --timer-width: 248px;
 
   /* Typography */
   --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -109,6 +108,17 @@
 [data-accent='sky'] {
   --accent: var(--accent-sky);
   --accent-text: var(--accent-sky-text);
+}
+
+/* Custom #rrggbb accent: colours computed for contrast by ui/theme/customAccent.ts. */
+[data-accent^='#'] {
+  --accent: var(--custom);
+  --accent-text: var(--custom-text-light);
+  --on-accent: var(--custom-on);
+}
+
+[data-theme='dark'] [data-accent^='#'] {
+  --accent-text: var(--custom-text-dark);
 }
 
 .tabular-nums {

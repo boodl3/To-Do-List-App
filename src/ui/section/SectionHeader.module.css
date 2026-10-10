@@ -26,6 +26,9 @@
   font-weight: var(--weight-semibold);
   line-height: var(--line-tight);
   resize: none;
+
+  /* Grow to fit the text at any width (no JS: it went stale when the card was resized). */
+  field-sizing: content;
   overflow-wrap: anywhere;
   cursor: text;
 }

@@ -79,6 +79,54 @@
   outline-offset: var(--focus-offset);
 }
 
+/* Custom colour: a dark disc with a plus inside a hue ring; shows the colour once chosen. */
+.custom {
+  display: grid;
+  place-items: center;
+  width: var(--space-4);
+  height: var(--space-4);
+  padding: 0;
+  border: var(--focus-width) solid transparent;
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(hsl(240deg 6% 8%), hsl(240deg 6% 8%)) padding-box,
+    conic-gradient(
+        hsl(0deg 100% 50%),
+        hsl(60deg 100% 50%),
+        hsl(120deg 100% 50%),
+        hsl(180deg 100% 50%),
+        hsl(240deg 100% 50%),
+        hsl(300deg 100% 50%),
+        hsl(360deg 100% 50%)
+      )
+      border-box;
+  color: hsl(0deg 0% 100%);
+  cursor: pointer;
+}
+
+.custom[data-selected] {
+  background:
+    linear-gradient(var(--custom), var(--custom)) padding-box,
+    conic-gradient(
+        hsl(0deg 100% 50%),
+        hsl(60deg 100% 50%),
+        hsl(120deg 100% 50%),
+        hsl(180deg 100% 50%),
+        hsl(240deg 100% 50%),
+        hsl(300deg 100% 50%),
+        hsl(360deg 100% 50%)
+      )
+      border-box;
+  color: var(--custom-on);
+  outline: var(--focus-width) solid var(--text);
+  outline-offset: var(--focus-offset);
+}
+
+.custom:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
 .danger,
 .item {
   display: flex;
@@ -123,6 +171,13 @@
   align-items: center;
   gap: var(--space-2);
   font-size: var(--text-sm);
+}
+
+.divider {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--hairline);
 }
 
 .group {

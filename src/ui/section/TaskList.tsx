@@ -1,19 +1,16 @@
-import { useLayoutEffect, useState } from 'react';
+import { useState } from 'react';
 import { taskEstimate } from '../../domain/rollup';
 import type { Section } from '../../domain/schema';
 import { addRowFocusId } from '../../state/actions';
 import { useActions, useFocusRequest } from '../app/useActions';
 import { SortableList } from './SortableList';
 import styles from './TaskList.module.css';
-import { autosize, TaskRow } from './TaskRow';
+import { TaskRow } from './TaskRow';
 
 function AddTaskRow({ sectionId }: { sectionId: string }) {
   const actions = useActions();
   const ref = useFocusRequest<HTMLTextAreaElement>(addRowFocusId(sectionId));
   const [text, setText] = useState('');
-  useLayoutEffect(() => {
-    autosize(ref.current);
-  }, [text, ref]);
   return (
     <textarea
       ref={ref}

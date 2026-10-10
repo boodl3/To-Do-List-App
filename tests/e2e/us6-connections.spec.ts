@@ -64,6 +64,23 @@ test.describe('US6 — connect sections', () => {
     expect(c.connections).toEqual([]);
   });
 
+  test('a connection can be curved like the drag preview, and back', async ({ page }) => {
+    await connectByMenu(page, 'Study', 'Mock exam');
+    await expect(edgePath(page)).toHaveAttribute('d', /L/); // straight segment
+    await selectEdge(page);
+    const toolbar = page.getByRole('toolbar', { name: 'Connection' });
+    await toolbar.getByRole('button', { name: 'Curved' }).click();
+    await expect(edgePath(page)).toHaveAttribute('d', /C/); // cubic bezier, as the preview
+    await expect(edgePath(page)).toHaveAttribute('marker-end', /url/); // still an arrow
+    expect((await readDoc(page)).board.connections[0]).toMatchObject({ shape: 'curved' });
+    await expect(toolbar.getByRole('button', { name: 'Curved' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await toolbar.getByRole('button', { name: 'Curved' }).click();
+    await expect(edgePath(page)).toHaveAttribute('d', /L/);
+  });
+
   test('self and duplicate connections are not offered', async ({ page }) => {
     await connectByMenu(page, 'Study', 'Mock exam');
     await nodeOf(page, 'Study').getByRole('button', { name: 'Section options' }).click();

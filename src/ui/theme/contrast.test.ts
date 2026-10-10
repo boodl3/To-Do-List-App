@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { contrast, parseHex } from '../../domain/color';
+import { SURFACE_CARD } from './customAccent';
 
 /** Parses `--token: value;` declarations from the theme files and checks WCAG 2.2 AA pairs. */
 const css = (f: string) => readFileSync(`src/ui/theme/${f}`, 'utf8');
@@ -31,20 +33,6 @@ function resolve(vars: Record<string, string>, name: string): string {
   return value;
 }
 
-function luminance(hex: string): number {
-  const h = hex.length === 4 ? hex.slice(1).replace(/./g, '$&$&') : hex.slice(1);
-  const [r, g, b] = [0, 2, 4].map((i) => {
-    const c = parseInt(h.slice(i, i + 2), 16) / 255;
-    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
-}
-
-export function contrast(a: string, b: string): number {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-  return (hi! + 0.05) / (lo! + 0.05);
-}
-
 const SURFACES = ['--surface-board', '--surface-card', '--surface-raised'];
 const ACCENTS = ['orange', 'mint', 'pink', 'yellow', 'violet', 'sky'];
 
@@ -66,15 +54,13 @@ describe.each(Object.entries(THEMES))('%s theme meets WCAG 2.2 AA', (_, vars) =>
     expect(ratio('--on-accent', `--accent-${accent}`)).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('custom accents are tuned against this theme’s real card colour', () => {
+    const theme = vars === THEMES.dark ? 'dark' : 'light';
+    expect(parseHex(resolve(vars, '--surface-card'))).toBe(SURFACE_CARD[theme]);
+  });
+
   it.each(SURFACES)('focus ring and control borders on %s ≥ 3:1', (bg) => {
     expect(ratio('--focus-ring', bg)).toBeGreaterThanOrEqual(3);
     expect(ratio('--control-border', bg)).toBeGreaterThanOrEqual(3);
-  });
-});
-
-describe('contrast()', () => {
-  it('matches known values', () => {
-    expect(contrast('#000', '#fff')).toBeCloseTo(21, 5);
-    expect(contrast('#777', '#fff')).toBeCloseTo(4.48, 2);
   });
 });

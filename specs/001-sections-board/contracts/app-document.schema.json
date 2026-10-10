@@ -4,7 +4,7 @@
   "properties": {
     "schemaVersion": {
       "type": "number",
-      "const": 1
+      "const": 3
     },
     "board": {
       "type": "object",
@@ -25,14 +25,22 @@
                 "maxLength": 120
               },
               "accent": {
-                "type": "string",
-                "enum": [
-                  "orange",
-                  "mint",
-                  "pink",
-                  "yellow",
-                  "violet",
-                  "sky"
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "orange",
+                      "mint",
+                      "pink",
+                      "yellow",
+                      "violet",
+                      "sky"
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^#[0-9a-f]{6}$"
+                  }
                 ]
               },
               "x": {
@@ -176,6 +184,13 @@
                   "line"
                 ]
               },
+              "shape": {
+                "type": "string",
+                "enum": [
+                  "straight",
+                  "curved"
+                ]
+              },
               "label": {
                 "type": "string",
                 "maxLength": 40
@@ -186,6 +201,7 @@
               "from",
               "to",
               "style",
+              "shape",
               "label"
             ],
             "additionalProperties": false
@@ -380,6 +396,16 @@
             "y": {
               "type": "number"
             },
+            "width": {
+              "type": "number",
+              "minimum": 200,
+              "maximum": 480
+            },
+            "height": {
+              "type": "number",
+              "minimum": 120,
+              "maximum": 640
+            },
             "visible": {
               "type": "boolean"
             }
@@ -387,6 +413,8 @@
           "required": [
             "x",
             "y",
+            "width",
+            "height",
             "visible"
           ],
           "additionalProperties": false
@@ -433,6 +461,6 @@
     "prefs"
   ],
   "additionalProperties": false,
-  "title": "Focusboard AppDocument v1",
+  "title": "Focusboard AppDocument v3",
   "description": "Persisted shape of focusboard.json. Generated from src/domain/schema.ts by src/domain/schema.test.ts — do not edit by hand."
 }

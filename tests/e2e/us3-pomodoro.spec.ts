@@ -7,6 +7,18 @@ const time = (page: Page) => page.getByRole('timer', { name: 'Time remaining' })
 const button = (page: Page, name: string) =>
   widget(page).getByRole('button', { name, exact: true });
 
+/** The widget no longer shows a "Today" counter: read the saved count (poll, autosave lags). */
+const today = async (page: Page) => (await readDoc(page)).pomodoro.completedToday.count;
+
+/**
+ * Start at local midday for tests that count today's sessions: they fast-forward up to 100
+ * minutes, and crossing midnight resets the count (they failed when run at 23:00).
+ */
+async function atMidday(page: Page) {
+  await page.clock.setFixedTime(new Date('2026-10-10T12:00:00'));
+  await openApp(page);
+}
+
 async function showTimer(page: Page) {
   await page.getByRole('button', { name: 'Timer', exact: true }).click();
   await expect(widget(page)).toBeVisible();
@@ -46,21 +58,24 @@ test.describe('US3 — focus with a movable Pomodoro timer', () => {
   test('a finished focus session alerts, counts, and prepares a break without starting it', async ({
     page,
   }) => {
+    await atMidday(page);
     await showTimer(page);
     await button(page, 'Start').click();
     await advanceClock(page, 25 * MIN);
     await expect(page.getByRole('status')).toContainText('Focus session complete');
     await expect(widget(page)).toContainText('Short break');
-    await expect(widget(page)).toContainText('Today 1');
+    await expect.poll(() => today(page)).toBe(1);
     await expect(button(page, 'Start')).toBeVisible();
   });
 
   test('every 4th focus session is followed by a long break', async ({ page }) => {
+    await atMidday(page);
     await showTimer(page);
     for (let i = 0; i < 4; i++) {
       await button(page, 'Start').click();
       await advanceClock(page, 25 * MIN);
-      await expect(widget(page)).toContainText(`Today ${i + 1}`);
+      await expect(widget(page)).toContainText('break');
+      await expect.poll(() => today(page)).toBe(i + 1);
       if (i < 3) await button(page, 'Skip').click(); // skip the short break
     }
     await expect(widget(page)).toContainText('Long break');
@@ -101,6 +116,46 @@ test.describe('US3 — focus with a movable Pomodoro timer', () => {
     expect([Math.round(after.x), Math.round(after.y)]).toEqual([pos.x, pos.y]);
   });
 
+  test('the widget resizes in width and height separately, text keeps its size, size persists', async ({
+    page,
+  }) => {
+    await showTimer(page);
+    const before = (await time(page).boundingBox())!;
+    await widget(page).hover();
+    const grip = page.getByRole('button', { name: 'Resize timer' });
+    const box = (await grip.boundingBox())!;
+    await page.mouse.move(box.x + 5, box.y + 5);
+    await page.mouse.down();
+    await page.mouse.move(box.x + 105, box.y + 65, { steps: 5 });
+    await page.mouse.up();
+    await expect(widget(page)).toHaveCSS('width', '348px');
+    await expect(widget(page)).toHaveCSS('height', '276px');
+    const after = (await time(page).boundingBox())!;
+    expect(after.height).toBeCloseTo(before.height, 0); // the clock didn't grow
+    expect((await readDoc(page)).pomodoro.widget).toMatchObject({ width: 348, height: 276 });
+    // It can't be made shorter than its content: the mode title, clock and controls all fit.
+    await widget(page).hover();
+    const corner = (await grip.boundingBox())!;
+    await page.mouse.move(corner.x + 5, corner.y + 5);
+    await page.mouse.down();
+    await page.mouse.move(corner.x + 5, corner.y - 400, { steps: 5 });
+    await page.mouse.up();
+    const short = (await widget(page).boundingBox())!;
+    const start = (await button(page, 'Start').boundingBox())!;
+    expect(start.y + start.height).toBeLessThanOrEqual(short.y + short.height);
+    await reopenApp(page);
+    await expect(widget(page)).toHaveCSS('width', '348px');
+  });
+
+  test('the mode title is one line and there is no "Today" counter', async ({ page }) => {
+    await showTimer(page);
+    await button(page, 'Skip').click(); // "Short break", which used to wrap
+    const title = widget(page).getByText('Short break', { exact: true }).first();
+    const { height } = (await title.boundingBox())!;
+    expect(height).toBeLessThan(24);
+    await expect(widget(page)).not.toContainText('Today');
+  });
+
   test('a task can be linked to the focus session', async ({ page }) => {
     await newSection(page, 'S');
     await page.getByRole('textbox', { name: 'Add a task' }).fill('Problem set');
@@ -113,6 +168,7 @@ test.describe('US3 — focus with a movable Pomodoro timer', () => {
   test('a session that ended while the app was closed shows as completed on launch', async ({
     page,
   }) => {
+    await atMidday(page);
     await showTimer(page);
     await button(page, 'Start').click();
     await readDoc(page); // wait for autosave
@@ -125,7 +181,7 @@ test.describe('US3 — focus with a movable Pomodoro timer', () => {
     });
     await page.reload();
     await expect(widget(page)).toContainText('Short break');
-    await expect(widget(page)).toContainText('Today 1');
+    await expect.poll(() => today(page)).toBe(1);
   });
 
   test('a running session survives a restart with the right remaining time', async ({ page }) => {

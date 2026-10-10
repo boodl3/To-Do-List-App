@@ -1,10 +1,17 @@
+/* Outer box: position and the resizable width/height. Never shorter than its content. */
 .widget {
   position: fixed;
   z-index: var(--z-timer);
   display: flex;
   flex-direction: column;
+  min-height: min-content;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   gap: var(--space-2);
-  width: var(--timer-width);
   padding: var(--space-3);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-timer);
@@ -42,21 +49,128 @@
   touch-action: none;
 }
 
-.handle:hover,
-.icon:hover {
-  background: var(--surface-raised);
-  color: var(--text);
+/* Resize handles like a selected section's (React Flow NodeResizer): focus-ring lines on the
+   edges, small squares on the corners, centred on the edge so they never cover the
+   controls. Shown on hover, focus or drag. */
+.resize {
+  position: absolute;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  opacity: 0;
+  touch-action: none;
+  transition: opacity var(--motion-fast) var(--ease-out);
+}
+
+.widget:hover .resize,
+.widget[data-resizing] .resize,
+.widget:has(.resize:focus-visible) .resize {
+  opacity: 1;
+}
+
+.resize[data-dir='n'],
+.resize[data-dir='s'] {
+  right: var(--space-3);
+  left: var(--space-3);
+  height: var(--space-2);
+  cursor: ns-resize;
+}
+
+.resize[data-dir='e'],
+.resize[data-dir='w'] {
+  top: var(--space-3);
+  bottom: var(--space-3);
+  width: var(--space-2);
+  cursor: ew-resize;
+}
+
+.resize[data-dir='n'] {
+  top: calc(var(--space-1) * -1);
+}
+
+.resize[data-dir='s'] {
+  bottom: calc(var(--space-1) * -1);
+}
+
+.resize[data-dir='e'] {
+  right: calc(var(--space-1) * -1);
+}
+
+.resize[data-dir='w'] {
+  left: calc(var(--space-1) * -1);
+}
+
+/* The visible edge line, through the middle of the hit area. */
+.resize[data-dir='n']::after,
+.resize[data-dir='s']::after {
+  position: absolute;
+  inset: 50% 0 auto;
+  border-top: 1px solid var(--focus-ring);
+  content: '';
+}
+
+.resize[data-dir='e']::after,
+.resize[data-dir='w']::after {
+  position: absolute;
+  inset: 0 auto 0 50%;
+  border-left: 1px solid var(--focus-ring);
+  content: '';
+}
+
+.resize:is([data-dir='nw'], [data-dir='ne'], [data-dir='sw'], [data-dir='se']) {
+  width: calc(var(--space-2) + var(--space-1));
+  height: calc(var(--space-2) + var(--space-1));
+  border: 1px solid var(--surface-card);
+  border-radius: 1px;
+  background: var(--focus-ring);
+}
+
+.resize[data-dir='nw'] {
+  top: calc(var(--space-1) * -1.5);
+  left: calc(var(--space-1) * -1.5);
+  cursor: nwse-resize;
+}
+
+.resize[data-dir='ne'] {
+  top: calc(var(--space-1) * -1.5);
+  right: calc(var(--space-1) * -1.5);
+  cursor: nesw-resize;
+}
+
+.resize[data-dir='sw'] {
+  bottom: calc(var(--space-1) * -1.5);
+  left: calc(var(--space-1) * -1.5);
+  cursor: nesw-resize;
+}
+
+.resize[data-dir='se'] {
+  right: calc(var(--space-1) * -1.5);
+  bottom: calc(var(--space-1) * -1.5);
+  cursor: nwse-resize;
+}
+
+.resize:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.face {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-2);
 }
 
 .mode {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--accent-text);
   font-weight: var(--weight-semibold);
-}
-
-.today {
-  color: var(--text-muted);
-  font-size: var(--text-xs);
 }
 
 .time {

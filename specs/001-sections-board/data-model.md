@@ -9,7 +9,7 @@ validated with Zod at load time; the published JSON Schema is
 ## Overview
 
 ```text
-AppDocument (persisted, schemaVersion = 1)
+AppDocument (persisted, schemaVersion = 3)
 ├── board: Board                    ← undo/redo applies here only (except viewport)
 │   ├── sections: Section[]         (array order = z-order, last = on top)
 │   │   └── tasks: Task[]           (array order = display order)
@@ -42,7 +42,7 @@ in memory when needed.
 |---|---|---|
 | `id` | `SectionId` (UUID v4 string, branded type) | Immutable. |
 | `title` | `string` | 0–120 chars, trimmed on save; empty renders "Untitled section". |
-| `accent` | `'orange' \| 'mint' \| 'pink' \| 'yellow' \| 'violet' \| 'sky'` | Default cycles through palette for new sections. |
+| `accent` | `'orange' \| 'mint' \| 'pink' \| 'yellow' \| 'violet' \| 'sky' \| '#rrggbb'` | Default cycles through palette for new sections. Custom colours are opaque lowercase hex (v2); text colours are derived at runtime for contrast. |
 | `x`, `y` | `number` (board units, px at zoom 1) | Multiples of 8 after any snapped move. |
 | `width`, `height` | `number` | `width ≥ 240`, `height ≥ 160`; multiples of 8 after snapped resize. |
 | `tasks` | `Task[]` | ≤ 500 per section. |
@@ -74,6 +74,7 @@ in memory when needed.
 | `id` | `ConnectionId` (UUID) | |
 | `from`, `to` | `SectionId` | `from ≠ to`; no two connections with the same `(from, to)`. |
 | `style` | `'arrow' \| 'line'` | `arrow` draws a head at `to`. A `line` is still stored directed so "reverse" is meaningful if switched back to arrow. |
+| `shape` | `'straight' \| 'curved'` | v3. `curved` is a bezier between the facing sides' midpoints, like the drag-to-connect preview. New connections are `straight`. |
 | `label` | `string` | 0–40 chars. |
 
 ### PomodoroState
@@ -87,7 +88,7 @@ in memory when needed.
 | `focusStreak` | `number` | Focus sessions completed since last long break. |
 | `completedToday` | `{ date: string /* YYYY-MM-DD local */; count: number }` | Resets when local date changes. |
 | `linkedTaskId` | `TaskId \| null` | Cleared if the task is deleted. |
-| `widget` | `{ x: number; y: number; visible: boolean }` | Window-space px; clamped into the window on load/resize. |
+| `widget` | `{ x: number; y: number; width: number; height: number; visible: boolean }` | Window-space px; clamped into the window on load/resize. `width` 200–480 (v2, default 248), `height` 120–640 (v3, default 216), independent; text keeps its size and the widget never renders shorter than its content. |
 
 ```ts
 type TimerStatus =
@@ -181,5 +182,7 @@ format(m) := m < 60 ? "{m}m" : (m % 60 == 0 ? "{h}h" : "{h}h {m}m")
 ## Migrations
 
 `migrations: Record<number, (doc: unknown) => unknown>` — `schemaVersion` 1 is the first;
+v1 → v2 adds `pomodoro.widget.width = 248` (custom `#rrggbb` accents need no data change);
+v2 → v3 adds `pomodoro.widget.height = 216` and `shape: 'straight'` on every connection;
 the loader runs `migrate(n → n+1)` until current, then validates. Each migration ships with a
 fixture-based test (`fixtures/v{n}.json`).

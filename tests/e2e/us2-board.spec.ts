@@ -129,6 +129,68 @@ test.describe('US2 — arrange sections freely', () => {
     await expect(page.getByRole('group', { name: 'A' })).toHaveAttribute('data-accent', 'sky');
   });
 
+  test('a custom colour can be picked by hex and persists across a restart', async ({ page }) => {
+    await newSection(page, 'A');
+    await page.getByRole('button', { name: 'Section options' }).click();
+    await page.getByRole('button', { name: 'Custom colour' }).click();
+    const hex = page.getByRole('textbox', { name: 'Hex colour' });
+    await hex.fill('#1D3557');
+    await hex.press('Enter');
+    await expect(page.getByRole('button', { name: 'Custom colour #1d3557' })).toBeVisible();
+    await expect(
+      page.getByRole('dialog', { name: 'Section options' }).getByRole('separator'),
+    ).toHaveCount(0); // no other section to connect to
+    await page.keyboard.press('Escape');
+    const card = page.getByRole('group', { name: 'A' });
+    await expect(card).toHaveAttribute('data-accent', '#1d3557');
+    await reopenApp(page);
+    await expect(card).toHaveAttribute('data-accent', '#1d3557');
+    // The card fills with the exact colour; text contrast is covered by src/domain/color.test.ts.
+    expect(
+      await card.evaluate((el) => getComputedStyle(el).getPropertyValue('--accent').trim()),
+    ).toBe('#1d3557');
+  });
+
+  test('choosing a preset closes the custom picker; a line separates Colour and Connect to', async ({
+    page,
+  }) => {
+    await newSection(page, 'A');
+    await newSection(page, 'B');
+    const menu = page.getByRole('dialog', { name: 'Section options' });
+    await page
+      .getByRole('group', { name: 'B' })
+      .getByRole('button', { name: 'Section options' })
+      .click();
+    await expect(menu.getByRole('separator')).toBeVisible();
+    await menu.getByRole('button', { name: 'Custom colour' }).click();
+    await expect(menu.getByRole('textbox', { name: 'Hex colour' })).toBeVisible();
+    await menu.getByRole('radio', { name: 'Sky' }).check();
+    await expect(menu.getByRole('textbox', { name: 'Hex colour' })).toBeHidden();
+    await expect(page.getByRole('group', { name: 'B' })).toHaveAttribute('data-accent', 'sky');
+  });
+
+  test('dragging in the colour area recolours live and undoes in one step', async ({ page }) => {
+    await newSection(page, 'A');
+    await newSection(page, 'B'); // A is below B: recolouring must not reorder (that closed the menu)
+    await page
+      .getByRole('group', { name: 'A' })
+      .getByRole('button', { name: 'Section options' })
+      .click();
+    await page.getByRole('button', { name: 'Custom colour' }).click();
+    const area = page.getByRole('slider', { name: 'Saturation and brightness' });
+    const box = (await area.boundingBox())!;
+    await page.mouse.move(box.x + 10, box.y + 10);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width - 5, box.y + 20, { steps: 8 });
+    await page.mouse.up();
+    const card = page.getByRole('group', { name: 'A' });
+    await expect(card).toHaveAttribute('data-accent', /^#[0-9a-f]{6}$/);
+    await expect(area).toBeVisible(); // the menu stayed open
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('Control+z');
+    await expect(card).toHaveAttribute('data-accent', 'orange');
+  });
+
   test('zoom is remembered across a restart', async ({ page }) => {
     await newSection(page, 'A');
     await page.getByRole('button', { name: 'Zoom in' }).click();

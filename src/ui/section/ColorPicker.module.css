@@ -1,0 +1,76 @@
+.picker {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* Saturation left→right, brightness bottom→top, over the current hue. */
+.area {
+  position: relative;
+  height: calc(var(--space-7) * 2);
+  border-radius: var(--radius-control);
+  background:
+    linear-gradient(to top, hsl(0deg 0% 0%), transparent),
+    linear-gradient(to right, hsl(0deg 0% 100%), hsl(calc(var(--hue) * 1deg) 100% 50%));
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.thumb {
+  position: absolute;
+  width: var(--space-3);
+  height: var(--space-3);
+  border: var(--focus-width) solid hsl(0deg 0% 100%);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 0 0 1px hsl(0deg 0% 0% / 50%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.hue {
+  flex: 1;
+  height: var(--space-2);
+  margin: 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(
+    to right,
+    hsl(0deg 100% 50%),
+    hsl(60deg 100% 50%),
+    hsl(120deg 100% 50%),
+    hsl(180deg 100% 50%),
+    hsl(240deg 100% 50%),
+    hsl(300deg 100% 50%),
+    hsl(360deg 100% 50%)
+  );
+  cursor: pointer;
+  appearance: none;
+}
+
+.hue::-webkit-slider-thumb {
+  width: var(--space-3);
+  height: var(--space-3);
+  border: var(--focus-width) solid hsl(0deg 0% 100%);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  box-shadow: 0 0 0 1px hsl(0deg 0% 0% / 50%);
+  appearance: none;
+}
+
+.hex {
+  width: calc(var(--space-7) + var(--space-5));
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
+  color: var(--text);
+  font-size: var(--text-sm);
+}
+
+.hex[aria-invalid='true'] {
+  border-color: var(--danger);
+}

@@ -30,6 +30,7 @@ export function mergeNodes(next: Node[], prev: Node[]): Node[] {
 export interface ConnectionEdgeData extends Record<string, unknown> {
   label: string;
   style: Connection['style'];
+  shape: Connection['shape'];
 }
 
 export function toEdges(connections: readonly Connection[], selectedId: string | null): Edge[] {
@@ -41,6 +42,6 @@ export function toEdges(connections: readonly Connection[], selectedId: string |
     selected: c.id === selectedId,
     markerEnd:
       c.style === 'arrow' ? { type: MarkerType.ArrowClosed, width: 18, height: 18 } : undefined,
-    data: { label: c.label, style: c.style } satisfies ConnectionEdgeData,
+    data: { label: c.label, style: c.style, shape: c.shape } satisfies ConnectionEdgeData,
   }));
 }

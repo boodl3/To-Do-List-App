@@ -1,18 +1,11 @@
 import { GripVertical, Timer, X } from 'lucide-react';
-import { useLayoutEffect, useState, type KeyboardEvent } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 import { formatEstimate } from '../../domain/estimate';
 import type { Subtask, Task } from '../../domain/schema';
 import { useActions, useFocusRequest } from '../app/useActions';
 import { EstimateInput } from './EstimateInput';
 import { useSortableRow } from './SortableList';
 import styles from './TaskRow.module.css';
-
-/** Grows a textarea to fit its content so long text wraps instead of scrolling. */
-export function autosize(el: HTMLTextAreaElement | null) {
-  if (!el) return;
-  el.style.height = 'auto';
-  el.style.height = `${el.scrollHeight}px`;
-}
 
 export function TaskRow({
   sectionId,
@@ -39,10 +32,6 @@ export function TaskRow({
   const kind = parentId ? 'Subtask' : 'Task';
   const name = item.text || '(untitled)';
   const value = draft ?? item.text;
-
-  useLayoutEffect(() => {
-    autosize(textRef.current);
-  }, [value, textRef]);
 
   const commitText = () => {
     if (draft !== null && draft !== item.text) actions.editText(sectionId, item.id, draft);
@@ -141,6 +130,7 @@ export function TaskRow({
           <EstimateInput
             value={item.estimateMin}
             label={`Estimate for ${name}`}
+            placeholder={active ? '—' : ''}
             onCommit={(m) => {
               actions.setEstimate(sectionId, item.id, m);
             }}

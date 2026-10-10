@@ -11,26 +11,29 @@ export function ConnectMenu({ sectionId, onDone }: { sectionId: string; onDone: 
   const others = board.sections.filter((s) => s.id !== sectionId);
   if (others.length === 0) return null;
   return (
-    <div className={styles.group}>
-      <span className={styles.legend}>Connect to</span>
-      {others.map((s) => {
-        const title = s.title || 'Untitled section';
-        return (
-          <button
-            key={s.id}
-            type="button"
-            className={styles.item}
-            aria-label={`Connect to ${title}`}
-            disabled={!canConnect(board, sectionId, s.id)}
-            onClick={() => {
-              actions.connect(sectionId, s.id);
-              onDone();
-            }}
-          >
-            <ArrowRight size={16} aria-hidden /> {title}
-          </button>
-        );
-      })}
-    </div>
+    <>
+      <hr className={styles.divider} />
+      <div className={styles.group}>
+        <span className={styles.legend}>Connect to</span>
+        {others.map((s) => {
+          const title = s.title || 'Untitled section';
+          return (
+            <button
+              key={s.id}
+              type="button"
+              className={styles.item}
+              aria-label={`Connect to ${title}`}
+              disabled={!canConnect(board, sectionId, s.id)}
+              onClick={() => {
+                actions.connect(sectionId, s.id);
+                onDone();
+              }}
+            >
+              <ArrowRight size={16} aria-hidden /> {title}
+            </button>
+          );
+        })}
+      </div>
+    </>
   );
 }

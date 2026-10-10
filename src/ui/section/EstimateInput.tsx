@@ -7,10 +7,13 @@ export function EstimateInput({
   value,
   onCommit,
   label,
+  placeholder = '—',
 }: {
   value: number | null;
   onCommit: (minutes: number | null) => void;
   label: string;
+  /** Shown centred while empty; TaskRow passes '' unless the row is hovered or focused. */
+  placeholder?: string;
 }) {
   const formatted = formatEstimate(value ?? 0);
   const [draft, setDraft] = useState<string | null>(null);
@@ -34,7 +37,7 @@ export function EstimateInput({
       <input
         className={`${styles.input} nodrag tabular-nums`}
         value={draft ?? formatted}
-        placeholder="—"
+        placeholder={placeholder}
         aria-label={label}
         aria-invalid={error !== null}
         aria-describedby={error ? errorId : undefined}

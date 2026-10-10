@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { BoardSchema } from './schema';
-import { canConnect, connect, removeConnection, restyle, reverse, setLabel } from './connections';
+import {
+  canConnect,
+  connect,
+  removeConnection,
+  reshape,
+  restyle,
+  reverse,
+  setLabel,
+} from './connections';
 import { emptyDocument } from './defaults';
 import { createSection } from './sections';
 
@@ -18,7 +26,9 @@ function board() {
 describe('connections', () => {
   it('connects two sections with an unlabelled arrow', () => {
     const b = connect(board(), { id: C1, from: A, to: B });
-    expect(b.connections).toEqual([{ id: C1, from: A, to: B, style: 'arrow', label: '' }]);
+    expect(b.connections).toEqual([
+      { id: C1, from: A, to: B, style: 'arrow', shape: 'straight', label: '' },
+    ]);
     expect(BoardSchema.safeParse(b).success).toBe(true);
   });
 
@@ -44,6 +54,14 @@ describe('connections', () => {
     expect(b.connections[0]).toMatchObject({ style: 'line', label: 'x'.repeat(40) });
     expect(restyle(b, C1, 'line')).toBe(b);
     expect(removeConnection(b, C1).connections).toEqual([]);
+  });
+
+  it('switches between straight and curved; the same shape is a no-op', () => {
+    let b = connect(board(), { id: C1, from: A, to: B });
+    b = reshape(b, C1, 'curved');
+    expect(b.connections[0]).toMatchObject({ shape: 'curved', style: 'arrow' });
+    expect(reshape(b, C1, 'curved')).toBe(b);
+    expect(BoardSchema.safeParse(b).success).toBe(true);
   });
 
   it('reverses unless that would duplicate an existing connection', () => {

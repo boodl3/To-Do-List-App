@@ -12,6 +12,28 @@ describe('loadDocument', () => {
     if (result.ok) expect(result.doc.board.sections).toHaveLength(2);
   });
 
+  it('migrates v1 → v3: the timer gets the default size, connections are straight, accents kept', () => {
+    const v1 = JSON.parse(fixture('v1')) as { board: { sections: { accent: string }[] } };
+    const result = loadDocument(fixture('v1'));
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.doc.schemaVersion).toBe(3);
+    expect(result.doc.pomodoro.widget).toMatchObject({ width: 248, height: 216 });
+    expect(result.doc.board.connections.every((c) => c.shape === 'straight')).toBe(true);
+    expect(result.doc.board.sections.map((s) => s.accent)).toEqual(
+      v1.board.sections.map((s) => s.accent),
+    );
+  });
+
+  it('migrates v2 (width-only timer, custom colours) → v3, keeping the width and colours', () => {
+    const result = loadDocument(fixture('v2'));
+    expect(result.ok ? 'ok' : result.error).toBe('ok');
+    if (!result.ok) return;
+    expect(result.doc.pomodoro.widget).toMatchObject({ width: 300, height: 216 });
+    expect(result.doc.board.sections[1]!.accent).toBe('#1d3557');
+    expect(result.doc.board.connections.map((c) => c.shape)).toEqual(['straight']);
+  });
+
   it('rejects invalid JSON', () => {
     expect(loadDocument(fixture('corrupt')).ok).toBe(false);
   });

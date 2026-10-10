@@ -16,7 +16,7 @@ export function connect(
   { id, from, to }: { id: string; from: string; to: string },
 ): Board {
   if (!canConnect(board, from, to)) return board;
-  const c: Connection = { id, from, to, style: 'arrow', label: '' };
+  const c: Connection = { id, from, to, style: 'arrow', shape: 'straight', label: '' };
   return { ...board, connections: [...board.connections, c] };
 }
 
@@ -31,6 +31,10 @@ function update(board: Board, id: string, fn: (c: Connection) => Connection): Bo
 
 export function restyle(board: Board, id: string, style: Connection['style']): Board {
   return update(board, id, (c) => (c.style === style ? c : { ...c, style }));
+}
+
+export function reshape(board: Board, id: string, shape: Connection['shape']): Board {
+  return update(board, id, (c) => (c.shape === shape ? c : { ...c, shape }));
 }
 
 export function setLabel(board: Board, id: string, label: string): Board {

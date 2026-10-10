@@ -67,7 +67,16 @@ describe('move / resize / recolor / z-order / delete', () => {
     b = createSection(b, { id: 'b', x: 400, y: 0, now: 0 });
     return {
       ...b,
-      connections: [{ id: 'c', from: 'a', to: 'b', style: 'arrow' as const, label: '' }],
+      connections: [
+        {
+          id: 'c',
+          from: 'a',
+          to: 'b',
+          style: 'arrow' as const,
+          shape: 'straight' as const,
+          label: '',
+        },
+      ],
     };
   };
 

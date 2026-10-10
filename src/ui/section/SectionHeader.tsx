@@ -1,11 +1,10 @@
-import { useLayoutEffect, useState } from 'react';
+import { useState } from 'react';
 import { sectionProgress, sectionRemaining } from '../../domain/rollup';
 import type { Section } from '../../domain/schema';
 import { titleFocusId } from '../../state/actions';
 import { useActions, useFocusRequest } from '../app/useActions';
 import { SegmentedProgress } from './SegmentedProgress';
 import styles from './SectionHeader.module.css';
-import { autosize } from './TaskRow';
 
 /** "1h 30m" with the leading unit large, as in the reference widgets. */
 function Remaining({ minutes }: { minutes: number }) {
@@ -28,10 +27,6 @@ export function SectionHeader({ section, menu }: { section: Section; menu?: Reac
   const value = draft ?? section.title;
   const remaining = sectionRemaining(section);
   const progress = sectionProgress(section);
-
-  useLayoutEffect(() => {
-    autosize(titleRef.current);
-  }, [value, titleRef]);
 
   const commit = () => {
     if (draft !== null) actions.renameSection(section.id, draft);

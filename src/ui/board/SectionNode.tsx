@@ -6,6 +6,7 @@ import { useActions } from '../app/useActions';
 import { SectionHeader } from '../section/SectionHeader';
 import { SectionMenu } from '../section/SectionMenu';
 import { TaskList } from '../section/TaskList';
+import { customAccentStyle } from '../theme/customAccent';
 import styles from './SectionNode.module.css';
 
 export const SectionNode = memo(function SectionNode({ id, selected }: NodeProps) {
@@ -33,6 +34,7 @@ export const SectionNode = memo(function SectionNode({ id, selected }: NodeProps
       <div
         className={styles.card}
         data-accent={section.accent}
+        style={customAccentStyle(section.accent)}
         role="group"
         aria-label={section.title || 'Untitled section'}
       >

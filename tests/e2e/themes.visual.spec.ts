@@ -12,7 +12,7 @@ test('board, connection and timer look right in each theme', async ({ page }) =>
   await openApp(page, { fixture: 'v1' });
   await page.getByRole('button', { name: 'Fit all' }).click();
   await expect(page).toHaveScreenshot('board.png', {
-    mask: [page.getByRole('timer'), page.getByText(/^Today \d+$/)],
+    mask: [page.getByRole('timer')],
     maxDiffPixelRatio: 0.002, // a font change is ~0.5% of pixels; keep this below that
   });
 });

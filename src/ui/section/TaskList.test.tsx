@@ -57,6 +57,16 @@ describe('TaskList', () => {
     expect(screen.getByRole('textbox', { name: 'Add a task' })).toHaveFocus();
   });
 
+  it('shows the empty-estimate dash only while the task is hovered', async () => {
+    setup([task('Read')]);
+    const estimate = screen.getByRole('textbox', { name: 'Estimate for Read' });
+    expect(estimate).toHaveAttribute('placeholder', '');
+    await userEvent.hover(screen.getByRole('textbox', { name: 'Task Read' }));
+    expect(estimate).toHaveAttribute('placeholder', '—');
+    await userEvent.unhover(screen.getByRole('textbox', { name: 'Task Read' }));
+    expect(estimate).toHaveAttribute('placeholder', '');
+  });
+
   it('Enter in a task adds an empty task below and focuses it', async () => {
     const { store } = setup([task('A'), task('C')]);
     await userEvent.click(screen.getByRole('textbox', { name: 'Task A' }));

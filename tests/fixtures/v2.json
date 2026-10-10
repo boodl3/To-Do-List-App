@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 2,
+  "board": {
+    "sections": [
+      {
+        "id": "40016d9b-c8cf-4068-b880-b0f78bf4bac1",
+        "title": "Calculus 2",
+        "accent": "orange",
+        "x": 48,
+        "y": 96,
+        "width": 320,
+        "height": 280,
+        "createdAt": 1791633600000,
+        "tasks": [
+          {
+            "id": "5e4e00e2-8b3e-4032-95ee-50b5d3882ed4",
+            "text": "Problem set",
+            "done": false,
+            "estimateMin": null,
+            "subtasks": [
+              {
+                "id": "51202148-8fa9-4cd7-8560-a2c6dd3eee6e",
+                "text": "Ratio test",
+                "done": true,
+                "estimateMin": 30
+              },
+              {
+                "id": "bde4f28f-cbf8-45d4-811f-ad774aa5c47c",
+                "text": "Root test",
+                "done": false,
+                "estimateMin": 45
+              }
+            ]
+          },
+          {
+            "id": "92032b8a-33c6-4ac3-b49d-c7f9325f134a",
+            "text": "Read chapter 11",
+            "done": false,
+            "estimateMin": 60,
+            "subtasks": []
+          }
+        ]
+      },
+      {
+        "id": "74a19df9-66c3-4f90-bc2c-12cde0177822",
+        "title": "Mock exam",
+        "accent": "#1d3557",
+        "x": 392,
+        "y": 96,
+        "width": 320,
+        "height": 240,
+        "createdAt": 1791633660000,
+        "tasks": [
+          {
+            "id": "909d42ef-51ed-421f-a79f-ca5ff61335b2",
+            "text": "Book a quiet room",
+            "done": true,
+            "estimateMin": 5,
+            "subtasks": []
+          }
+        ]
+      }
+    ],
+    "connections": [
+      {
+        "id": "af4639e6-f906-4673-ad72-5747ccab7967",
+        "from": "40016d9b-c8cf-4068-b880-b0f78bf4bac1",
+        "to": "74a19df9-66c3-4f90-bc2c-12cde0177822",
+        "style": "arrow",
+        "label": "then"
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  },
+  "pomodoro": {
+    "settings": {
+      "focusMin": 25,
+      "shortBreakMin": 5,
+      "longBreakMin": 15,
+      "longBreakEvery": 4,
+      "sound": true
+    },
+    "mode": "focus",
+    "status": {
+      "kind": "running",
+      "endsAt": 1791635100000
+    },
+    "sessionId": "0b5c0f9e-6a43-4c1e-9a77-3f1d2b8e4c11",
+    "focusStreak": 1,
+    "completedToday": {
+      "date": "2026-10-10",
+      "count": 1
+    },
+    "linkedTaskId": "5e4e00e2-8b3e-4032-95ee-50b5d3882ed4",
+    "widget": {
+      "x": 760,
+      "y": 96,
+      "visible": true,
+      "width": 300
+    }
+  },
+  "prefs": {
+    "theme": "system",
+    "pinned": false
+  }
+}

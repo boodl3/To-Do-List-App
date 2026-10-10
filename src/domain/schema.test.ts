@@ -56,13 +56,48 @@ describe('AppDocumentSchema', () => {
     expect(AppDocumentSchema.safeParse(withSection({ width: 239 })).success).toBe(false);
   });
 
+  it.each(['#7038f4', '#000000'])('accepts the custom accent %s', (accent) => {
+    expect(AppDocumentSchema.safeParse(withSection({ accent })).success).toBe(true);
+  });
+
+  it.each(['#7038F4', '#fff', '#7038f408', 'blue'])('rejects the accent %s', (accent) => {
+    expect(AppDocumentSchema.safeParse(withSection({ accent })).success).toBe(false);
+  });
+
+  it.each([{ width: 199 }, { width: 481 }, { height: 119 }, { height: 641 }])(
+    'rejects a timer size of %o',
+    (size) => {
+      const doc = emptyDocument(NOW);
+      const bad = {
+        ...doc,
+        pomodoro: { ...doc.pomodoro, widget: { ...doc.pomodoro.widget, ...size } },
+      };
+      expect(AppDocumentSchema.safeParse(bad).success).toBe(false);
+    },
+  );
+
+  it('rejects an unknown connection shape', () => {
+    const doc = withSection({});
+    const conn = { id: ID, from: ID, to: ID, style: 'arrow', shape: 'zigzag', label: '' };
+    expect(
+      AppDocumentSchema.safeParse({ ...doc, board: { ...doc.board, connections: [conn] } }).success,
+    ).toBe(false);
+  });
+
   it('rejects a bad UUID', () => {
     expect(AppDocumentSchema.safeParse(withSection({ id: 'not-a-uuid' })).success).toBe(false);
   });
 
   it('rejects a connection label over 40 chars and dangling connections', () => {
     const doc = withSection({});
-    const conn = { id: ID, from: ID, to: ID, style: 'arrow', label: 'x'.repeat(41) };
+    const conn = {
+      id: ID,
+      from: ID,
+      to: ID,
+      style: 'arrow',
+      shape: 'straight',
+      label: 'x'.repeat(41),
+    };
     const long = { ...doc, board: { ...doc.board, connections: [conn] } };
     expect(AppDocumentSchema.safeParse(long).success).toBe(false);
 

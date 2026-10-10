@@ -1,18 +1,20 @@
 import {
   BaseEdge,
   EdgeLabelRenderer,
+  getBezierPath,
   getStraightPath,
+  Position,
   useInternalNode,
   type Edge,
   type EdgeProps,
   type InternalNode,
 } from '@xyflow/react';
-import { ArrowLeftRight, Minus, MoveRight, Trash2 } from 'lucide-react';
+import { ArrowLeftRight, Minus, MoveRight, Spline, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useActions } from '../app/useActions';
 import type { ConnectionEdgeData } from './adapters';
 import styles from './ConnectionEdge.module.css';
-import { attachPoints } from './edgeGeometry';
+import { attachPoints, curveEnds } from './edgeGeometry';
 
 const rectOf = (n: InternalNode) => ({
   x: n.internals.positionAbsolute.x,
@@ -45,6 +47,17 @@ function EdgeToolbar({ id, data }: { id: string; data: ConnectionEdgeData }) {
         }}
       >
         <Minus size={16} aria-hidden />
+      </button>
+      <button
+        type="button"
+        aria-label="Curved"
+        title="Curved"
+        aria-pressed={data.shape === 'curved'}
+        onClick={() => {
+          actions.reshapeConnection(id, data.shape === 'curved' ? 'straight' : 'curved');
+        }}
+      >
+        <Spline size={16} aria-hidden />
       </button>
       <button
         type="button"
@@ -83,6 +96,35 @@ function EdgeToolbar({ id, data }: { id: string; data: ConnectionEdgeData }) {
   );
 }
 
+const POSITION = {
+  top: Position.Top,
+  right: Position.Right,
+  bottom: Position.Bottom,
+  left: Position.Left,
+};
+
+/** Straight: along the centre line. Curved: a bezier between facing sides, like the preview. */
+function edgePath(a: ReturnType<typeof rectOf>, b: ReturnType<typeof rectOf>, shape: string) {
+  if (shape === 'curved') {
+    const c = curveEnds(a, b);
+    return getBezierPath({
+      sourceX: c.source.x,
+      sourceY: c.source.y,
+      sourcePosition: POSITION[c.source.position],
+      targetX: c.target.x,
+      targetY: c.target.y,
+      targetPosition: POSITION[c.target.position],
+    });
+  }
+  const p = attachPoints(a, b);
+  return getStraightPath({
+    sourceX: p.source.x,
+    sourceY: p.source.y,
+    targetX: p.target.x,
+    targetY: p.target.y,
+  });
+}
+
 /** Floating edge between section borders; its toolbar appears when selected (FR-016, FR-017). */
 export function ConnectionEdge({
   id,
@@ -95,13 +137,7 @@ export function ConnectionEdge({
   const from = useInternalNode(source);
   const to = useInternalNode(target);
   if (!from || !to || !data) return null;
-  const p = attachPoints(rectOf(from), rectOf(to));
-  const [path, labelX, labelY] = getStraightPath({
-    sourceX: p.source.x,
-    sourceY: p.source.y,
-    targetX: p.target.x,
-    targetY: p.target.y,
-  });
+  const [path, labelX, labelY] = edgePath(rectOf(from), rectOf(to), data.shape);
   return (
     <>
       <BaseEdge id={id} path={path} markerEnd={markerEnd} interactionWidth={24} />

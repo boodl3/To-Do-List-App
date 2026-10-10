@@ -47,14 +47,14 @@ export async function readDoc(page: Page) {
             height: number;
             tasks: unknown[];
           }[];
-          connections: { from: string; to: string; style: string; label: string }[];
+          connections: { from: string; to: string; style: string; shape: string; label: string }[];
           viewport: { x: number; y: number; zoom: number };
         };
         pomodoro: {
           mode: string;
           status: { kind: string };
           completedToday: { count: number };
-          widget: { x: number; y: number; visible: boolean };
+          widget: { x: number; y: number; width: number; height: number; visible: boolean };
           settings: { focusMin: number };
         };
         prefs: { theme: string; pinned: boolean };
