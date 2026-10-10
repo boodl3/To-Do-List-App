@@ -33,7 +33,7 @@ Playwright + `@axe-core/playwright` with fake platform adapters (E2E, visual, a1
 **Project Type**: Desktop application (single repo: web frontend + Tauri shell)
 **Performance Goals**: ≥ 60 fps drag/resize with 50 sections + 100 connections; cold start
 < 2 s; autosave ≤ 1 s after last change; timer drift ≤ 1 s / 25 min
-**Constraints**: offline-only; idle RAM < 250 MB; no filesystem/shell/network permissions for the
+**Constraints**: offline-only; idle RAM < 250 MB (< 350 MB on boards of 50+ sections); no filesystem/shell/network permissions for the
 webview; strict CSP; WCAG 2.2 AA in both themes; full keyboard operability
 **Scale/Scope**: 1 user, 1 board, up to ~50 sections × ~50 tasks typical (hard caps 500/500);
 ≈ 15 UI components, ≈ 10 domain modules, 4 Rust commands

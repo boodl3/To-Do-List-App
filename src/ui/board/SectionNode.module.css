@@ -21,6 +21,15 @@
   flex: 1;
   min-height: 0;
   padding: var(--space-2) var(--space-2) var(--space-3);
+
+  /* A live scroller is a GPU layer holding its whole content; 50 of them cost ~120 MB idle.
+     Only the card under the pointer or keyboard focus scrolls; the gutter stops text reflow. */
+  overflow-y: hidden;
+  scrollbar-gutter: stable;
+}
+
+.body:hover,
+.body:focus-within {
   overflow-y: auto;
 }
 
