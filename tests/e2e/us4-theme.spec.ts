@@ -21,7 +21,8 @@ test.describe('US4 — light and dark mode', () => {
     await openApp(page);
     await newSection(page, 'Keep me');
     await page.getByRole('button', { name: 'Dark mode' }).click();
-    expect(await theme(page)).toBe('dark');
+    // The switch runs inside a View Transition, whose update lands a frame later: poll.
+    await expect.poll(() => theme(page)).toBe('dark');
     await expect.poll(() => boardBackground(page)).toBe('rgb(10, 10, 12)');
     await expect(page.getByRole('button', { name: 'Dark mode' })).toHaveAttribute(
       'aria-pressed',
@@ -30,7 +31,7 @@ test.describe('US4 — light and dark mode', () => {
     await expect(page.getByRole('textbox', { name: 'Section title' })).toHaveValue('Keep me');
 
     await page.getByRole('button', { name: 'Light mode' }).click();
-    expect(await theme(page)).toBe('light');
+    await expect.poll(() => theme(page)).toBe('light');
     await expect.poll(() => boardBackground(page)).toBe('rgb(242, 242, 240)');
 
     await page.getByRole('button', { name: 'Dark mode' }).click();

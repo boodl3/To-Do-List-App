@@ -81,7 +81,8 @@ test.describe('US3 — focus with a movable Pomodoro timer', () => {
     expect(menu.x + menu.width).toBeGreaterThanOrEqual(g.x + g.width);
     await page.getByRole('spinbutton', { name: 'Focus (minutes)' }).fill('2');
     await page.keyboard.press('Escape');
-    await expect(time(page)).toHaveText('25:00');
+    // Still the running 25-minute session (it ticks on the real clock, so allow a few seconds).
+    await expect(time(page)).toHaveText(/^(25:00|24:5\d)$/);
     await button(page, 'Reset').click();
     await expect(time(page)).toHaveText('02:00');
   });

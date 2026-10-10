@@ -16,7 +16,9 @@ test.describe('edge cases', () => {
     await expect(more.getByRole('button', { name: 'Dark mode' })).toHaveCount(0);
     await page.keyboard.press('Escape');
     await page.getByRole('button', { name: 'Dark mode' }).click();
-    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark');
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.dataset.theme))
+      .toBe('dark');
   });
 
   test('the timer stays inside the window when it shrinks', async ({ page }) => {
