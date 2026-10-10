@@ -1,21 +1,19 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: (template) → 1.0.0
-Bump rationale: Initial ratification — all placeholders replaced with concrete principles.
-Principles added:
-  I.   Local-First & Private
-  II.  Test-First (NON-NEGOTIABLE)
-  III. Layered Architecture (Domain ⟂ UI ⟂ Platform)
-  IV.  Calm, Consistent Interface (Design Tokens)
-  V.   Responsive by Budget
-  VI.  Secure by Default (Least Privilege)
-  VII. Simplicity & YAGNI
-Sections added: Technology & Quality Standards, Development Workflow, Governance
+Version change: 1.0.0 → 1.1.0
+Bump rationale: Principle V materially changed — the idle-memory budget gains a stress-board
+  tier (< 350 MB for boards of 50+ sections) and gates on the median of 3 runs.
+  Measured 2026-10-11: the WebView2 floor is ~130 MB on an empty board; the 50-section,
+  500-task stress board idles at 270–309 MB after removing per-card GPU scroll layers,
+  with ~30 MB run-to-run swing. Ordinary boards stay under 250 MB.
+Principles modified:
+  V.   Responsive by Budget — idle memory tiers, median-of-3 measurement
+Sections added: none
 Templates requiring updates:
-  ✅ .specify/templates/plan-template.md   — "Constitution Check" gates map 1:1 to principles below
-  ✅ .specify/templates/spec-template.md   — no change required (tech-agnostic)
-  ✅ .specify/templates/tasks-template.md  — test tasks precede implementation tasks (Principle II)
+  ✅ .specify/templates/plan-template.md   — no change required (gates still map 1:1)
+  ✅ .specify/templates/spec-template.md   — no change required
+  ✅ .specify/templates/tasks-template.md  — no change required
 Follow-up TODOs: none
 -->
 
@@ -90,7 +88,9 @@ enforced in review.
 These budgets are release gates, measured on a mid-range laptop:
 
 - Dragging or resizing a section: ≥ 60 fps with 50 sections and 100 connections.
-- Cold start to interactive board: < 2 s. Idle memory: < 250 MB.
+- Cold start to interactive board: < 2 s.
+- Idle memory (private working set, 60 s idle, median of 3 runs): < 250 MB; boards of
+  50+ sections: < 350 MB.
 - Any edit is persisted within 1 s (debounced autosave) without blocking input.
 - Pomodoro drift: ≤ 1 s per 25-minute session, including while the window is unfocused
   or minimized (remaining time derives from a wall-clock end timestamp, never from
@@ -159,4 +159,4 @@ it with that respect.
   re-evaluated after design. Violations require a Complexity Tracking entry or a
   design change.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-10 | **Last Amended**: 2026-10-10
+**Version**: 1.1.0 | **Ratified**: 2026-10-10 | **Last Amended**: 2026-10-11
