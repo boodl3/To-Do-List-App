@@ -21,24 +21,23 @@
 
 Measured with `node scripts/measure-release.mjs` on the NSIS release build (process launch →
 `board-ready` mark; Task Manager's *private working set* of the app and its WebView2 processes
-after 60 s idle). Window 1200×800.
+after 60 s idle; median of 3 runs, since one run swings by ~30 MB). Window 1200×800.
 
-| Budget | Target | Empty board | `v1` (2 sections) | Large (50 sections, 100 connections) |
+| Budget (Constitution 1.1.0) | Target | Empty board | `v1` (2 sections) | Large (50 sections, 500 tasks, 100 connections) |
 |---|---|---|---|---|
-| Cold start to interactive board | < 2 s | 0.69 s ✅ | 0.68 s ✅ | 0.71 s ✅ |
-| Idle memory (private working set) | < 250 MB | 130 MB ✅ | 161 MB ✅ | **331 MB ❌** |
+| Cold start to interactive board | < 2 s | 0.69 s ✅ | 0.68 s ✅ | 0.86 s ✅ |
+| Idle memory (private working set) | < 250 MB; < 350 MB at 50+ sections | 130 MB ✅ | 161 MB ✅ | 271 MB ✅ |
 
-**Release gate: BLOCKED on idle memory for the 50-section stress board.** Breakdown of the
-large board: WebView2 GPU process 196 MB, renderer 92 MB, JS heap only 17 MB. The WebView2
-baseline alone is ~130 MB (61 MB of it GPU). Injecting CSS at runtime (no shadows, no backdrop
-blur, no scrollers) did not lower GPU memory, but the GPU process pools textures, so that probe
-is inconclusive. Next steps, in order:
+Empty and `v1` are single runs from 2026-10-10; the large board is the 2026-10-11 median
+(runs: 291, 271, 270 MB).
 
-1. Measure with React Flow `onlyRenderVisibleElements` (only on-screen sections painted).
-2. Rebuild-per-variant to find the GPU layers (card scrollers, shadows, viewport layer), using
-   `chrome://tracing`-style GPU memory dumps via the debugging port.
-3. If WebView2's floor makes 250 MB unreachable for this board, amend the budget explicitly in
-   the constitution (Governance: amendments) rather than ignore it.
+**Release gate: PASS.** The large board was 387 MB idle until each card stopped being a
+permanent scroll container: Chromium kept all 50 as GPU layers with their full task lists
+rasterized (memory-infra dump: +48 MB GPU shared images, +34 MB tiles over an empty board).
+Cards now scroll only under the pointer or keyboard focus, which brought the GPU process from
+235 MB to ~147 MB. React Flow `onlyRenderVisibleElements` was measured and made no difference.
+The remaining cost over the ~130 MB WebView2 floor is mostly the DOM of 500 task rows, so
+Constitution 1.1.0 sets a 350 MB tier for boards of 50+ sections.
 
 ## Known advisories (not blocking)
 
@@ -64,5 +63,4 @@ platform adapters.
 
 ## Follow-ups
 
-- Idle memory on the 50-section board (see above) — blocks release.
 - Ctrl+Arrow resize records one undo step per key press (not coalesced).
