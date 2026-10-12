@@ -1,6 +1,6 @@
 import { ACCENTS, DEFAULT_SECTION, MIN_SECTION } from './defaults';
 import type { Rect } from './layout/placement';
-import type { Accent, Board, Section } from './schema';
+import { NOTE_MAX_LENGTH, type Accent, type Board, type Section } from './schema';
 
 /** Section operations on the board (FR-007 – FR-009). Unchanged input → same board back. */
 export function updateSection(board: Board, id: string, fn: (s: Section) => Section): Board {
@@ -11,9 +11,21 @@ export function updateSection(board: Board, id: string, fn: (s: Section) => Sect
   return next === current ? board : { ...board, sections: board.sections.with(i, next) };
 }
 
+/** Notes are sections that hold rich text instead of tasks. */
+export const isNote = (s: Section): boolean => s.note !== undefined;
+
+export const sectionName = (s: Section): string =>
+  s.title || (isNote(s) ? 'Untitled note' : 'Untitled section');
+
 export function createSection(
   board: Board,
-  { id, x, y, now }: { id: string; x: number; y: number; now: number },
+  {
+    id,
+    x,
+    y,
+    now,
+    note = false,
+  }: { id: string; x: number; y: number; now: number; note?: boolean },
 ): Board {
   const section: Section = {
     id,
@@ -24,6 +36,7 @@ export function createSection(
     ...DEFAULT_SECTION,
     tasks: [],
     createdAt: now,
+    ...(note && { note: '' }),
   };
   return { ...board, sections: [...board.sections, section] };
 }
@@ -45,6 +58,14 @@ export function resizeSection(board: Board, id: string, r: Rect): Board {
     s.x === r.x && s.y === r.y && s.width === width && s.height === height
       ? s
       : { ...s, x: r.x, y: r.y, width, height },
+  );
+}
+
+/** `html` is already sanitized by the editor; only the length is enforced here. */
+export function editNote(board: Board, id: string, html: string): Board {
+  const value = html.slice(0, NOTE_MAX_LENGTH);
+  return updateSection(board, id, (s) =>
+    !isNote(s) || s.note === value ? s : { ...s, note: value },
   );
 }
 

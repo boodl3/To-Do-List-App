@@ -77,12 +77,12 @@ export function createActions(
       ?.tasks.flatMap((t) => [t.id, ...t.subtasks.map((s) => s.id)]) ?? [];
 
   const api = {
-    /** New section in the nearest free spot of the visible board area (FR-006). */
-    addSection(visible: Rect): string {
+    /** New section (or note) in the nearest free spot of the visible board area (FR-006). */
+    addSection(visible: Rect, { note = false } = {}): string {
       const id = newId();
       state().updateBoard((b) => {
         const { x, y } = findFreeSpot(b.sections, DEFAULT_SECTION, visible);
-        return createSection(b, { id, x, y, now: now() });
+        return createSection(b, { id, x, y, now: now(), note });
       });
       state().requestFocus(titleFocusId(id));
       return id;
@@ -90,11 +90,11 @@ export function createActions(
     recolorSection(sectionId: string, accent: Accent) {
       state().updateBoard((b) => S.recolorSection(b, sectionId, accent));
     },
-    /** Empty sections go at once; others wait for confirmation (FR-007). */
+    /** Empty sections and notes go at once; others wait for confirmation (FR-007). */
     requestDeleteSection(sectionId: string) {
       const section = state().doc.board.sections.find((s) => s.id === sectionId);
       if (!section) return;
-      if (section.tasks.length === 0) api.deleteSection(sectionId);
+      if (section.tasks.length === 0 && !section.note) api.deleteSection(sectionId);
       else state().setConfirmDelete(sectionId);
     },
     deleteSection(sectionId: string) {
@@ -161,6 +161,10 @@ export function createActions(
     },
     renameSection(sectionId: string, title: string) {
       state().updateBoard((b) => renameSection(b, sectionId, title));
+    },
+    /** Live while typing; the editor wraps a focus visit in a gesture, so it's one undo step. */
+    editNote(sectionId: string, html: string) {
+      state().updateBoard((b) => S.editNote(b, sectionId, html));
     },
 
     /** Appends from the "Add a task" row (focus stays there), or inserts after `afterId`. */

@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 import { canConnect } from '../../domain/connections';
+import { sectionName } from '../../domain/sections';
 import { useBoard } from '../../state/selectors';
 import { useActions } from '../app/useActions';
 import styles from './SectionMenu.module.css';
@@ -16,7 +17,7 @@ export function ConnectMenu({ sectionId, onDone }: { sectionId: string; onDone: 
       <div className={styles.group}>
         <span className={styles.legend}>Connect to</span>
         {others.map((s) => {
-          const title = s.title || 'Untitled section';
+          const title = sectionName(s);
           return (
             <button
               key={s.id}

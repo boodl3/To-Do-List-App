@@ -1,11 +1,14 @@
 import { z } from 'zod';
 
 /** Persisted document shape. contracts/app-document.schema.json is generated from this. */
-export const CURRENT_SCHEMA_VERSION = 3;
+export const CURRENT_SCHEMA_VERSION = 4;
 
 /** Timer widget size bounds in px (width v2, height v3). Text keeps its size; layout reflows. */
 export const WIDGET_WIDTH = { min: 200, max: 480 } as const;
 export const WIDGET_HEIGHT = { min: 120, max: 640 } as const;
+
+/** Longest stored note HTML (v4). */
+export const NOTE_MAX_LENGTH = 100_000;
 
 const Uuid = z.uuidv4();
 const EstimateMin = z.int().min(1).max(5940).nullable();
@@ -39,6 +42,8 @@ export const SectionSchema = z.strictObject({
   height: z.number().min(160),
   tasks: z.array(TaskSchema).max(500),
   createdAt: z.int().min(0),
+  /** v4: present on notes, which hold sanitized rich-text HTML instead of tasks. */
+  note: z.string().max(NOTE_MAX_LENGTH).optional(),
 });
 
 export const ConnectionSchema = z.strictObject({
@@ -123,7 +128,7 @@ export const AppDocumentSchema = z
     prefs: PreferencesSchema,
   })
   .meta({
-    title: 'Focusboard AppDocument v3',
+    title: 'Focusboard AppDocument v4',
     description:
       'Persisted shape of focusboard.json. Generated from src/domain/schema.ts by src/domain/schema.test.ts — do not edit by hand.',
   });

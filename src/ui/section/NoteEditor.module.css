@@ -1,0 +1,61 @@
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: var(--space-1) var(--space-2);
+  border-top: 1px solid var(--hairline);
+}
+
+.tool {
+  display: grid;
+  place-items: center;
+  width: var(--space-5);
+  height: var(--space-5);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tool:hover {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+.tool[aria-pressed='true'] {
+  background: var(--surface-raised);
+  color: var(--accent);
+}
+
+.editor {
+  min-height: 100%;
+  padding-inline: var(--space-2);
+  outline: none;
+  color: var(--text);
+  font-size: var(--text-md);
+  line-height: var(--line-normal);
+  overflow-wrap: anywhere;
+  cursor: text;
+}
+
+.editor ul,
+.editor ol {
+  margin: 0;
+  padding-left: 1.4em;
+}
+
+.editor ul {
+  list-style: disc;
+}
+
+.editor ol {
+  list-style: decimal;
+}
+
+.editor[data-empty]:not(:focus)::before {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+  pointer-events: none;
+}

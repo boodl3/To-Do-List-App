@@ -1,5 +1,5 @@
 import { ReactFlowProvider } from '@xyflow/react';
-import { LayoutGrid, Plus, Timer } from 'lucide-react';
+import { LayoutGrid, NotebookPen, Plus, Timer } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { startFresh } from '../../state/boot';
 import { useApp, useAppStore } from '../../state/selectors';
@@ -46,6 +46,7 @@ function LoadErrorDialog({ error }: { error: string }) {
 
 function Workspace() {
   const addSection = useAddSection();
+  const addNote = useAddSection(true);
   // Cold-start gate (Constitution V): measured from process start to this mark (T116).
   useEffect(() => {
     performance.mark('board-ready');
@@ -58,9 +59,14 @@ function Workspace() {
     <>
       <Toolbar
         start={
-          <IconButton label="New section" onClick={addSection}>
-            <Plus size={18} aria-hidden />
-          </IconButton>
+          <>
+            <IconButton label="New section" onClick={addSection}>
+              <Plus size={18} aria-hidden />
+            </IconButton>
+            <IconButton label="New note" onClick={addNote}>
+              <NotebookPen size={18} aria-hidden />
+            </IconButton>
+          </>
         }
         overflow={
           <>

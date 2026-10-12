@@ -3,6 +3,7 @@ import { useId, useState } from 'react';
 import { parseHex } from '../../domain/color';
 import { ACCENTS } from '../../domain/defaults';
 import type { Section } from '../../domain/schema';
+import { isNote } from '../../domain/sections';
 import { useActions } from '../app/useActions';
 import { useAnchoredPopover } from '../app/useAnchoredPopover';
 import { customAccentStyle, isCustomAccent } from '../theme/customAccent';
@@ -26,6 +27,8 @@ export function SectionMenu({ section }: { section: Section }) {
   const { button, popover, open } = useAnchoredPopover(picking);
   if (!open && picking) setPicking(false); // the picker starts collapsed each time
   const custom = isCustomAccent(section.accent);
+  const kind = isNote(section) ? 'note' : 'section';
+  const name = isNote(section) ? 'Note options' : 'Section options';
 
   return (
     <>
@@ -33,7 +36,7 @@ export function SectionMenu({ section }: { section: Section }) {
         ref={button}
         type="button"
         className={`${styles.trigger} nodrag`}
-        aria-label="Section options"
+        aria-label={name}
         popoverTarget={id}
       >
         <MoreHorizontal size={18} aria-hidden />
@@ -44,7 +47,7 @@ export function SectionMenu({ section }: { section: Section }) {
         popover="auto"
         className={`${styles.popover} nodrag nowheel`}
         role="dialog"
-        aria-label="Section options"
+        aria-label={name}
       >
         {open && (
           <>
@@ -112,7 +115,7 @@ export function SectionMenu({ section }: { section: Section }) {
                 actions.requestDeleteSection(section.id);
               }}
             >
-              <Trash2 size={16} aria-hidden /> Delete section
+              <Trash2 size={16} aria-hidden /> Delete {kind}
             </button>
           </>
         )}
