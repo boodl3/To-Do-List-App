@@ -5,6 +5,8 @@ import {
   bringToFront,
   createSection,
   deleteSection,
+  editNote,
+  isNote,
   moveSection,
   recolorSection,
   renameSection,
@@ -30,6 +32,15 @@ describe('createSection', () => {
         createdAt: 5,
       },
     ]);
+  });
+
+  it('adds an empty note with the note option', () => {
+    const b = createSection(board(), { id: 'a', x: 0, y: 0, now: 0, note: true });
+    expect(b.sections[0]).toMatchObject({ note: '', tasks: [] });
+    expect(isNote(b.sections[0]!)).toBe(true);
+    expect('note' in createSection(board(), { id: 'b', x: 0, y: 0, now: 0 }).sections[0]!).toBe(
+      false,
+    );
   });
 
   it('cycles accents through the palette', () => {
@@ -108,5 +119,21 @@ describe('move / resize / recolor / z-order / delete', () => {
   it('applies tidy positions in one update', () => {
     const b = applyPositions(two(), [{ id: 'b', x: 264, y: 0 }]);
     expect(b.sections[1]).toMatchObject({ x: 264, y: 0 });
+  });
+});
+
+describe('editNote', () => {
+  const withNote = () => createSection(board(), { id: 'n', x: 0, y: 0, now: 0, note: true });
+
+  it('stores the HTML, capped at the schema limit; same board back when unchanged', () => {
+    const b = editNote(withNote(), 'n', '<b>hi</b>');
+    expect(b.sections[0]!.note).toBe('<b>hi</b>');
+    expect(editNote(b, 'n', '<b>hi</b>')).toBe(b);
+    expect(editNote(b, 'n', 'x'.repeat(100_001)).sections[0]!.note).toHaveLength(100_000);
+  });
+
+  it('leaves task sections alone', () => {
+    const b = createSection(board(), { id: 's', x: 0, y: 0, now: 0 });
+    expect(editNote(b, 's', 'x')).toBe(b);
   });
 });

@@ -1,8 +1,10 @@
 import { Handle, NodeResizer, Position, type NodeProps } from '@xyflow/react';
 import { memo } from 'react';
 import { MIN_SECTION } from '../../domain/defaults';
+import { isNote, sectionName } from '../../domain/sections';
 import { useApp } from '../../state/selectors';
 import { useActions } from '../app/useActions';
+import { NoteEditor } from '../section/NoteEditor';
 import { SectionHeader } from '../section/SectionHeader';
 import { SectionMenu } from '../section/SectionMenu';
 import { TaskList } from '../section/TaskList';
@@ -36,12 +38,16 @@ export const SectionNode = memo(function SectionNode({ id, selected }: NodeProps
         data-accent={section.accent}
         style={customAccentStyle(section.accent)}
         role="group"
-        aria-label={section.title || 'Untitled section'}
+        aria-label={sectionName(section)}
       >
         <SectionHeader section={section} menu={<SectionMenu section={section} />} />
-        <div className={`${styles.body} nowheel`}>
-          <TaskList section={section} />
-        </div>
+        {isNote(section) ? (
+          <NoteEditor section={section} bodyClassName={`${styles.body} nowheel`} />
+        ) : (
+          <div className={`${styles.body} nowheel`}>
+            <TaskList section={section} />
+          </div>
+        )}
       </div>
     </>
   );

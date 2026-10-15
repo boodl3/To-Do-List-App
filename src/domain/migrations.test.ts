@@ -1,6 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { emptyDocument } from './defaults';
+import { newId } from './ids';
 import { loadDocument } from './migrations';
+import { createSection, editNote } from './sections';
 import { CURRENT_SCHEMA_VERSION } from './schema';
 
 const fixture = (name: string) => readFileSync(`tests/fixtures/${name}.json`, 'utf8');
@@ -12,12 +15,12 @@ describe('loadDocument', () => {
     if (result.ok) expect(result.doc.board.sections).toHaveLength(2);
   });
 
-  it('migrates v1 → v3: the timer gets the default size, connections are straight, accents kept', () => {
+  it('migrates v1 → v4: the timer gets the default size, connections are straight, accents kept', () => {
     const v1 = JSON.parse(fixture('v1')) as { board: { sections: { accent: string }[] } };
     const result = loadDocument(fixture('v1'));
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.doc.schemaVersion).toBe(3);
+    expect(result.doc.schemaVersion).toBe(4);
     expect(result.doc.pomodoro.widget).toMatchObject({ width: 248, height: 216 });
     expect(result.doc.board.connections.every((c) => c.shape === 'straight')).toBe(true);
     expect(result.doc.board.sections.map((s) => s.accent)).toEqual(
@@ -25,13 +28,25 @@ describe('loadDocument', () => {
     );
   });
 
-  it('migrates v2 (width-only timer, custom colours) → v3, keeping the width and colours', () => {
+  it('migrates v2 (width-only timer, custom colours) → v4, keeping the width and colours', () => {
     const result = loadDocument(fixture('v2'));
     expect(result.ok ? 'ok' : result.error).toBe('ok');
     if (!result.ok) return;
     expect(result.doc.pomodoro.widget).toMatchObject({ width: 300, height: 216 });
     expect(result.doc.board.sections[1]!.accent).toBe('#1d3557');
     expect(result.doc.board.connections.map((c) => c.shape)).toEqual(['straight']);
+  });
+
+  it('migrates v3 → v4 unchanged, and loads v4 notes', () => {
+    const v3 = { ...emptyDocument(0), schemaVersion: 3 };
+    const result = loadDocument(JSON.stringify(v3));
+    expect(result.ok ? result.doc : result.error).toEqual({ ...v3, schemaVersion: 4 });
+
+    const id = newId();
+    const board = createSection(emptyDocument(0).board, { id, x: 0, y: 0, now: 0, note: true });
+    const v4 = { ...emptyDocument(0), board: editNote(board, id, '<b>hi</b>') };
+    const loaded = loadDocument(JSON.stringify(v4));
+    expect(loaded.ok && loaded.doc.board.sections[0]!.note).toBe('<b>hi</b>');
   });
 
   it('rejects invalid JSON', () => {

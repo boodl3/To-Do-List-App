@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
+import { isNote, sectionName } from '../../domain/sections';
 import { useApp } from '../../state/selectors';
 import { useActions } from '../app/useActions';
 import styles from '../app/App.module.css';
 
-/** Confirmation before deleting a section that still has tasks (FR-007). */
+/** Confirmation before deleting a section that still has tasks, or a note with text (FR-007). */
 export function ConfirmDeleteDialog() {
   const actions = useActions();
   const section = useApp((s) => s.doc.board.sections.find((x) => x.id === s.confirmDeleteId));
@@ -15,7 +16,7 @@ export function ConfirmDeleteDialog() {
     else ref.current?.close();
   }, [section]);
 
-  const title = section?.title || 'Untitled section';
+  const title = section ? sectionName(section) : '';
   const count = section?.tasks.length ?? 0;
   return (
     <dialog
@@ -28,7 +29,10 @@ export function ConfirmDeleteDialog() {
     >
       <h2 id="confirm-delete-title">Delete "{title}"?</h2>
       <p>
-        It has {count} {count === 1 ? 'task' : 'tasks'}. You can undo this with Ctrl+Z.
+        {section && isNote(section)
+          ? 'Its text will be deleted.'
+          : `It has ${count} ${count === 1 ? 'task' : 'tasks'}.`}{' '}
+        You can undo this with Ctrl+Z.
       </p>
       <div className={styles.actions}>
         <button

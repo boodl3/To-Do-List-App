@@ -27,6 +27,8 @@ export const migrations: Record<number, (doc: Doc) => Doc> = {
       pomodoro: { ...pomodoro, widget: { ...widget, height: 216 } },
     };
   },
+  // v4: optional `note` on sections. Additive, so v3 documents pass through unchanged.
+  3: (doc) => doc,
 };
 
 export type LoadDocumentResult = { ok: true; doc: AppDocument } | { ok: false; error: string };
