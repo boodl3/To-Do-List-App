@@ -7,6 +7,8 @@ import {
   deleteSection,
   editNote,
   isNote,
+  isImage,
+  sectionName,
   moveSection,
   recolorSection,
   renameSection,
@@ -135,5 +137,45 @@ describe('editNote', () => {
   it('leaves task sections alone', () => {
     const b = createSection(board(), { id: 's', x: 0, y: 0, now: 0 });
     expect(editNote(b, 's', 'x')).toBe(b);
+  });
+});
+
+describe('image cards', () => {
+  const image = { src: 'data:image/webp;base64,UklGRg==', width: 1600, height: 900 };
+  const add = (img = image) => createSection(board(), { id: 'i', x: 0, y: 0, now: 0, image: img });
+  const card = (b: ReturnType<typeof add>) => b.sections[0]!;
+  const ratio = (s: ReturnType<typeof card>) => s.width / s.height;
+
+  it('starts fitted in a 320 square at the picture ratio', () => {
+    const s = card(add());
+    expect(isImage(s) && !isNote(s)).toBe(true);
+    expect(sectionName(s)).toBe('Untitled image');
+    expect(s.width).toBe(320);
+    expect(s.height).toBe(180);
+    const tall = card(add({ ...image, width: 300, height: 900 }));
+    expect(tall.width).toBe(240); // 320 tall would be 107 wide: the minimum width wins
+    expect(tall.height).toBe(720);
+  });
+
+  it('keeps the aspect ratio when resized by width, by height, or from the top', () => {
+    const b = add();
+    const wide = card(resizeSection(b, 'i', { x: 0, y: 0, width: 640, height: 999 }));
+    expect([wide.width, wide.height]).toEqual([640, 360]);
+
+    const taller = card(resizeSection(b, 'i', { x: 0, y: 0, width: 320, height: 360 }));
+    expect([taller.width, taller.height]).toEqual([640, 360]);
+
+    const s = card(b);
+    const fromTop = card(
+      resizeSection(b, 'i', { x: 0, y: -100, width: 480, height: s.height + 100 }),
+    );
+    expect(fromTop.y + fromTop.height).toBe(s.y + s.height); // bottom edge stays put
+    expect(ratio(fromTop)).toBeCloseTo(16 / 9, 1);
+  });
+
+  it('never shrinks below the minimum card size', () => {
+    const s = card(resizeSection(add(), 'i', { x: 0, y: 0, width: 10, height: 10 }));
+    // A 16:9 picture needs 284 of width to reach the 160 minimum height.
+    expect([s.width, s.height]).toEqual([284, 160]);
   });
 });

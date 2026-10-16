@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { sectionProgress, sectionRemaining } from '../../domain/rollup';
-import { isNote } from '../../domain/sections';
+import { sectionKind } from '../../domain/sections';
 import type { Section } from '../../domain/schema';
 import { titleFocusId } from '../../state/actions';
 import { useActions, useFocusRequest } from '../app/useActions';
@@ -28,7 +28,7 @@ export function SectionHeader({ section, menu }: { section: Section; menu?: Reac
   const value = draft ?? section.title;
   const remaining = sectionRemaining(section);
   const progress = sectionProgress(section);
-  const note = isNote(section);
+  const kind = sectionKind(section);
 
   const commit = () => {
     if (draft !== null) actions.renameSection(section.id, draft);
@@ -43,8 +43,8 @@ export function SectionHeader({ section, menu }: { section: Section; menu?: Reac
           rows={1}
           className={`${styles.title} nodrag`}
           value={value}
-          placeholder={note ? 'Untitled note' : 'Untitled section'}
-          aria-label={note ? 'Note title' : 'Section title'}
+          placeholder={`Untitled ${kind}`}
+          aria-label={`${kind[0]!.toUpperCase()}${kind.slice(1)} title`}
           onChange={(e) => {
             setDraft(e.target.value);
           }}

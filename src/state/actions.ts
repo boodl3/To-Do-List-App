@@ -1,11 +1,11 @@
-import { DEFAULT_SECTION, GRID } from '../domain/defaults';
+import { GRID } from '../domain/defaults';
 import { newId } from '../domain/ids';
 import { findFreeSpot, type Rect } from '../domain/layout/placement';
 import { snapRect } from '../domain/layout/snap';
 import { tidy } from '../domain/layout/tidy';
 import * as S from '../domain/sections';
-import { createSection, renameSection, updateSection } from '../domain/sections';
-import type { Accent, Connection, Section, Viewport } from '../domain/schema';
+import { createSection, renameSection, sectionSize, updateSection } from '../domain/sections';
+import type { Accent, Connection, Section, SectionImage, Viewport } from '../domain/schema';
 import * as C from '../domain/connections';
 import * as P from '../domain/pomodoro';
 import { itemEstimate } from '../domain/rollup';
@@ -77,24 +77,29 @@ export function createActions(
       ?.tasks.flatMap((t) => [t.id, ...t.subtasks.map((s) => s.id)]) ?? [];
 
   const api = {
-    /** New section (or note) in the nearest free spot of the visible board area (FR-006). */
-    addSection(visible: Rect, { note = false } = {}): string {
+    /** New section, note or image in the nearest free spot of the visible board (FR-006). */
+    addSection(
+      visible: Rect,
+      { note = false, image }: { note?: boolean; image?: SectionImage } = {},
+    ): string {
       const id = newId();
       state().updateBoard((b) => {
-        const { x, y } = findFreeSpot(b.sections, DEFAULT_SECTION, visible);
-        return createSection(b, { id, x, y, now: now(), note });
+        const { x, y } = findFreeSpot(b.sections, sectionSize(image), visible);
+        return createSection(b, { id, x, y, now: now(), note, image });
       });
-      state().requestFocus(titleFocusId(id));
+      // Not for images: a focused title would take the next paste, which may be another image.
+      if (!image) state().requestFocus(titleFocusId(id));
       return id;
     },
     recolorSection(sectionId: string, accent: Accent) {
       state().updateBoard((b) => S.recolorSection(b, sectionId, accent));
     },
-    /** Empty sections and notes go at once; others wait for confirmation (FR-007). */
+    /** Empty sections and notes go at once; others and images wait for confirmation (FR-007). */
     requestDeleteSection(sectionId: string) {
       const section = state().doc.board.sections.find((s) => s.id === sectionId);
       if (!section) return;
-      if (section.tasks.length === 0 && !section.note) api.deleteSection(sectionId);
+      if (section.tasks.length === 0 && !section.note && !section.image)
+        api.deleteSection(sectionId);
       else state().setConfirmDelete(sectionId);
     },
     deleteSection(sectionId: string) {
