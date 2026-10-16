@@ -3,7 +3,7 @@ import { useId, useState } from 'react';
 import { parseHex } from '../../domain/color';
 import { ACCENTS } from '../../domain/defaults';
 import type { Section } from '../../domain/schema';
-import { isNote } from '../../domain/sections';
+import { sectionKind } from '../../domain/sections';
 import { useActions } from '../app/useActions';
 import { useAnchoredPopover } from '../app/useAnchoredPopover';
 import { customAccentStyle, isCustomAccent } from '../theme/customAccent';
@@ -27,8 +27,8 @@ export function SectionMenu({ section }: { section: Section }) {
   const { button, popover, open } = useAnchoredPopover(picking);
   if (!open && picking) setPicking(false); // the picker starts collapsed each time
   const custom = isCustomAccent(section.accent);
-  const kind = isNote(section) ? 'note' : 'section';
-  const name = isNote(section) ? 'Note options' : 'Section options';
+  const kind = sectionKind(section);
+  const name = `${kind[0]!.toUpperCase()}${kind.slice(1)} options`;
 
   return (
     <>
@@ -51,42 +51,45 @@ export function SectionMenu({ section }: { section: Section }) {
       >
         {open && (
           <>
-            <fieldset className={styles.colors}>
-              <legend className={styles.legend}>Colour</legend>
-              {ACCENTS.map((accent) => (
-                <label
-                  key={accent}
-                  className={styles.swatch}
-                  data-accent={accent}
-                  title={label(accent)}
+            {/* An image card shows no accent, so it has no colour to pick. */}
+            {kind !== 'image' && (
+              <fieldset className={styles.colors}>
+                <legend className={styles.legend}>Colour</legend>
+                {ACCENTS.map((accent) => (
+                  <label
+                    key={accent}
+                    className={styles.swatch}
+                    data-accent={accent}
+                    title={label(accent)}
+                  >
+                    <input
+                      type="radio"
+                      name={`${id}-accent`}
+                      checked={section.accent === accent}
+                      aria-label={label(accent)}
+                      onChange={() => {
+                        actions.recolorSection(section.id, accent);
+                        setPicking(false); // a preset replaces the custom colour
+                      }}
+                    />
+                  </label>
+                ))}
+                <button
+                  type="button"
+                  className={styles.custom}
+                  data-selected={custom || undefined}
+                  style={customAccentStyle(section.accent)}
+                  aria-label={custom ? `Custom colour ${section.accent}` : 'Custom colour'}
+                  title="Custom colour"
+                  aria-expanded={picking}
+                  onClick={() => {
+                    setPicking(!picking);
+                  }}
                 >
-                  <input
-                    type="radio"
-                    name={`${id}-accent`}
-                    checked={section.accent === accent}
-                    aria-label={label(accent)}
-                    onChange={() => {
-                      actions.recolorSection(section.id, accent);
-                      setPicking(false); // a preset replaces the custom colour
-                    }}
-                  />
-                </label>
-              ))}
-              <button
-                type="button"
-                className={styles.custom}
-                data-selected={custom || undefined}
-                style={customAccentStyle(section.accent)}
-                aria-label={custom ? `Custom colour ${section.accent}` : 'Custom colour'}
-                title="Custom colour"
-                aria-expanded={picking}
-                onClick={() => {
-                  setPicking(!picking);
-                }}
-              >
-                <Plus size={14} aria-hidden />
-              </button>
-            </fieldset>
+                  <Plus size={14} aria-hidden />
+                </button>
+              </fieldset>
+            )}
             {picking && (
               <ColorPicker
                 value={custom ? section.accent : presetHex(section.accent)}

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /** Persisted document shape. contracts/app-document.schema.json is generated from this. */
-export const CURRENT_SCHEMA_VERSION = 4;
+export const CURRENT_SCHEMA_VERSION = 5;
 
 /** Timer widget size bounds in px (width v2, height v3). Text keeps its size; layout reflows. */
 export const WIDGET_WIDTH = { min: 200, max: 480 } as const;
@@ -9,6 +9,9 @@ export const WIDGET_HEIGHT = { min: 120, max: 640 } as const;
 
 /** Longest stored note HTML (v4). */
 export const NOTE_MAX_LENGTH = 100_000;
+
+/** Longest stored image data URL (v5); images are downscaled and re-encoded before storing. */
+export const IMAGE_MAX_LENGTH = 4_000_000;
 
 const Uuid = z.uuidv4();
 const EstimateMin = z.int().min(1).max(5940).nullable();
@@ -32,6 +35,16 @@ export const TaskSchema = z.strictObject({
   subtasks: z.array(SubtaskSchema),
 });
 
+/** v5: a re-encoded picture and its pixel size, which fixes the card's aspect ratio. */
+export const SectionImageSchema = z.strictObject({
+  src: z
+    .string()
+    .max(IMAGE_MAX_LENGTH)
+    .regex(/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/),
+  width: z.int().min(1),
+  height: z.int().min(1),
+});
+
 export const SectionSchema = z.strictObject({
   id: Uuid,
   title: z.string().max(120),
@@ -44,6 +57,8 @@ export const SectionSchema = z.strictObject({
   createdAt: z.int().min(0),
   /** v4: present on notes, which hold sanitized rich-text HTML instead of tasks. */
   note: z.string().max(NOTE_MAX_LENGTH).optional(),
+  /** v5: present on image cards, which show a picture instead of tasks. */
+  image: SectionImageSchema.optional(),
 });
 
 export const ConnectionSchema = z.strictObject({
@@ -128,7 +143,7 @@ export const AppDocumentSchema = z
     prefs: PreferencesSchema,
   })
   .meta({
-    title: 'Focusboard AppDocument v4',
+    title: 'Focusboard AppDocument v5',
     description:
       'Persisted shape of focusboard.json. Generated from src/domain/schema.ts by src/domain/schema.test.ts — do not edit by hand.',
   });
@@ -137,6 +152,7 @@ export type PresetAccent = z.infer<typeof PresetAccentSchema>;
 export type Accent = z.infer<typeof AccentSchema>;
 export type Subtask = z.infer<typeof SubtaskSchema>;
 export type Task = z.infer<typeof TaskSchema>;
+export type SectionImage = z.infer<typeof SectionImageSchema>;
 export type Section = z.infer<typeof SectionSchema>;
 export type Connection = z.infer<typeof ConnectionSchema>;
 export type Viewport = z.infer<typeof ViewportSchema>;

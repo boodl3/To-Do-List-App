@@ -4,7 +4,7 @@
   "properties": {
     "schemaVersion": {
       "type": "number",
-      "const": 4
+      "const": 5
     },
     "board": {
       "type": "object",
@@ -145,6 +145,32 @@
               "note": {
                 "type": "string",
                 "maxLength": 100000
+              },
+              "image": {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string",
+                    "maxLength": 4000000,
+                    "pattern": "^data:image\\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$"
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "src",
+                  "width",
+                  "height"
+                ],
+                "additionalProperties": false
               }
             },
             "required": [
@@ -465,6 +491,6 @@
     "prefs"
   ],
   "additionalProperties": false,
-  "title": "Focusboard AppDocument v4",
+  "title": "Focusboard AppDocument v5",
   "description": "Persisted shape of focusboard.json. Generated from src/domain/schema.ts by src/domain/schema.test.ts — do not edit by hand."
 }

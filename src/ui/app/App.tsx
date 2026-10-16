@@ -1,11 +1,12 @@
 import { ReactFlowProvider } from '@xyflow/react';
-import { LayoutGrid, NotebookPen, Plus, Timer } from 'lucide-react';
+import { ImagePlus, LayoutGrid, NotebookPen, Plus, Timer } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { startFresh } from '../../state/boot';
 import { useApp, useAppStore } from '../../state/selectors';
 import { BoardCanvas } from '../board/BoardCanvas';
 import { EmptyBoard } from '../board/EmptyBoard';
-import { useAddSection } from '../board/useAddSection';
+import { IMAGE_TYPES } from '../board/imageFile';
+import { useAddImage, useAddSection, useImagePaste } from '../board/useAddSection';
 import { useVisibleRect } from '../board/useVisibleRect';
 import { PomodoroWidget } from '../pomodoro/PomodoroWidget';
 import { ConfirmDeleteDialog } from '../section/ConfirmDeleteDialog';
@@ -47,6 +48,9 @@ function LoadErrorDialog({ error }: { error: string }) {
 function Workspace() {
   const addSection = useAddSection();
   const addNote = useAddSection(true);
+  const addImage = useAddImage();
+  const imageInput = useRef<HTMLInputElement>(null);
+  useImagePaste();
   // Cold-start gate (Constitution V): measured from process start to this mark (T116).
   useEffect(() => {
     performance.mark('board-ready');
@@ -66,6 +70,21 @@ function Workspace() {
             <IconButton label="New note" onClick={addNote}>
               <NotebookPen size={18} aria-hidden />
             </IconButton>
+            <IconButton label="Add image" onClick={() => imageInput.current?.click()}>
+              <ImagePlus size={18} aria-hidden />
+            </IconButton>
+            <input
+              ref={imageInput}
+              type="file"
+              accept={IMAGE_TYPES.join(',')}
+              hidden
+              aria-label="Image file"
+              onChange={(e) => {
+                const file = e.currentTarget.files?.[0];
+                e.currentTarget.value = ''; // picking the same file again still fires
+                if (file) void addImage(file);
+              }}
+            />
           </>
         }
         overflow={

@@ -29,6 +29,8 @@ export const migrations: Record<number, (doc: Doc) => Doc> = {
   },
   // v4: optional `note` on sections. Additive, so v3 documents pass through unchanged.
   3: (doc) => doc,
+  // v5: optional `image` on sections. Additive too.
+  4: (doc) => doc,
 };
 
 export type LoadDocumentResult = { ok: true; doc: AppDocument } | { ok: false; error: string };

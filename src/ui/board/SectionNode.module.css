@@ -33,6 +33,45 @@
   overflow-y: auto;
 }
 
+/* Image cards are just the picture (it is also the drag handle); the card already has its ratio. */
+.imageCard {
+  position: relative;
+  border: 0;
+}
+
+/* The options button floats over the picture, where it sits in other cards' headers. */
+.imageMenu {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+}
+
+/* Icon and hover highlight contrast with the picture under the button (see cornerTone). */
+.imageMenu[data-tone='dark'] > button {
+  color: rgb(255 255 255 / 92%);
+}
+
+.imageMenu[data-tone='dark'] > button:hover {
+  background: rgb(255 255 255 / 18%);
+}
+
+.imageMenu[data-tone='light'] > button {
+  color: rgb(0 0 0 / 75%);
+}
+
+.imageMenu[data-tone='light'] > button:hover {
+  background: rgb(0 0 0 / 10%);
+}
+
+.picture {
+  display: block;
+  cursor: grab;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+
 /* Connection handles: visible on hover/selection (React Flow positions them on each edge). */
 .handle {
   width: var(--handle-size);

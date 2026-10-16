@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { isNote, sectionName } from '../../domain/sections';
+import { isImage, isNote, sectionName } from '../../domain/sections';
 import { useApp } from '../../state/selectors';
 import { useActions } from '../app/useActions';
 import styles from '../app/App.module.css';
@@ -29,9 +29,11 @@ export function ConfirmDeleteDialog() {
     >
       <h2 id="confirm-delete-title">Delete "{title}"?</h2>
       <p>
-        {section && isNote(section)
-          ? 'Its text will be deleted.'
-          : `It has ${count} ${count === 1 ? 'task' : 'tasks'}.`}{' '}
+        {section && isImage(section)
+          ? 'Its picture will be deleted.'
+          : section && isNote(section)
+            ? 'Its text will be deleted.'
+            : `It has ${count} ${count === 1 ? 'task' : 'tasks'}.`}{' '}
         You can undo this with Ctrl+Z.
       </p>
       <div className={styles.actions}>
